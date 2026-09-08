@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تسجيل الدخول - مكتب الوسام</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #f5f7fa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .login-box {
+      width: 100%;
+      max-width: 430px;
+      background: white;
+      padding: 35px 25px;
+      border-radius: 18px;
+      box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #0f3d3e;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 30px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      margin-bottom: 18px;
+      border: 1px solid #ddd;
+      border-radius: 9px;
+      font-size: 16px;
+      direction: ltr;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 9px;
+      background: #0f3d3e;
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .register {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .register a {
+      color: #0f3d3e;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .back {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      color: #777;
+      text-decoration: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="login-box">
+
+    <h1>🎓 مكتب الوسام</h1>
+
+    <p class="subtitle">
+      تسجيل الدخول إلى حسابك
+    </p>
+
+    <form>
+
+      <label>البريد الإلكتروني</label>
+      <input
+        type="email"
+        placeholder="example@email.com"
+        required
+      >
+
+      <label>كلمة المرور</label>
+      <input
+        type="password"
+        placeholder="أدخل كلمة المرور"
+        required
+      >
+
+      <button type="submit">
+        تسجيل الدخول
+      </button>
+
+    </form>
+
+    <div class="register">
+      ليس لديك حساب؟
+      <a href="#">إنشاء حساب جديد</a>
+    </div>
+
+    <a class="back" href="index.html">
+      ← العودة إلى الصفحة الرئيسية
+    </a>
+
+  </div>
+
+</body>
+</html>
