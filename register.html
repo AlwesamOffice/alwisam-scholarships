@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إنشاء حساب - مكتب الوسام</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      margin: 0;
+      padding: 0;
+    }
+
+    .box {
+      max-width: 420px;
+      margin: 50px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #123b5d;
+    }
+
+    p {
+      text-align: center;
+      color: #666;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px;
+      margin: 8px 0;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #123b5d;
+      color: white;
+      font-size: 17px;
+      cursor: pointer;
+    }
+
+    a {
+      display: block;
+      text-align: center;
+      margin-top: 15px;
+      color: #123b5d;
+      text-decoration: none;
+    }
+
+    #message {
+      text-align: center;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="box">
+
+    <h1>🎓 مكتب الوسام</h1>
+
+    <p>إنشاء حساب طالب جديد</p>
+
+    <form id="registerForm">
+
+      <input
+        type="text"
+        id="fullName"
+        placeholder="الاسم الكامل"
+        required
+      >
+
+      <input
+        type="email"
+        id="email"
+        placeholder="البريد الإلكتروني"
+        required
+      >
+
+      <input
+        type="password"
+        id="password"
+        placeholder="كلمة المرور"
+        minlength="6"
+        required
+      >
+
+      <input
+        type="password"
+        id="confirmPassword"
+        placeholder="تأكيد كلمة المرور"
+        minlength="6"
+        required
+      >
+
+      <button type="submit">إنشاء الحساب</button>
+
+    </form>
+
+    <div id="message"></div>
+
+    <a href="login.html">لدي حساب بالفعل — تسجيل الدخول</a>
+    <a href="index.html">العودة إلى الصفحة الرئيسية</a>
+
+  </div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+
+    const SUPABASE_URL = "https://bjiasnxdqxbxobqaovgh.supabase.co/rest/v1/";
+
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_E5cMO9MoOnCt7QwUJrRcZw_WwaLK8b6";
+
+    const supabaseClient = supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+
+    document.getElementById("registerForm").addEventListener("submit", async function(e) {
+
+      e.preventDefault();
+
+      const fullName = document.getElementById("fullName").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
+      const message = document.getElementById("message");
+
+
+      if (password !== confirmPassword) {
+        message.textContent = "❌ كلمتا المرور غير متطابقتين";
+        return;
+      }
+
+
+      message.textContent = "جاري إنشاء الحساب...";
+
+
+      const { data, error } = await supabaseClient.auth.signUp({
+
+        email: email,
+
+        password: password,
+
+        options: {
+          data: {
+            full_name: fullName
+          }
+        }
+
+      });
+
+
+      if (error) {
+        message.textContent = "❌ " + error.message;
+        return;
+      }
+
+
+      message.textContent =
+        "✅ تم إنشاء الحساب. تحقق من بريدك الإلكتروني لتأكيد الحساب.";
+
+    });
+
+  </script>
+
+</body>
+</html>
