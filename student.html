@@ -497,7 +497,6 @@
 
     </div>
 
-
     <!-- ========================= -->
     <!-- الخطوة 2 -->
     <!-- ========================= -->
@@ -566,7 +565,6 @@
 
     </div>
 
-
     <!-- ========================= -->
     <!-- الخطوة 3 -->
     <!-- ========================= -->
@@ -632,7 +630,6 @@
 
     </div>
 
-
     <!-- ========================= -->
     <!-- الخطوة 4 -->
     <!-- ========================= -->
@@ -672,7 +669,6 @@
 
     </div>
 
-
     <!-- ========================= -->
     <!-- الخطوة 5 -->
     <!-- ========================= -->
@@ -704,7 +700,6 @@
 
     </div>
 
-
     <!-- ========================= -->
     <!-- الخطوة 6 -->
     <!-- ========================= -->
@@ -727,7 +722,6 @@
       </div>
 
     </div>
-
 
     <!-- ========================= -->
     <!-- شاشة النجاح -->
@@ -766,17 +760,28 @@
   © مكتب الوسام للتقديم والمنح - جميع الحقوق محفوظة
 </footer>
 
-
 <script>
 
   /* =====================================================
-     معلومات Supabase
+     🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴
+     🔴🔴🔴  رابط Supabase هنا  🔴🔴🔴
      
-     ضع رابط Supabase هنا
-     وضع مفتاح Supabase هنا
+     احذف فقط عبارة "ضع الرابط هنا"
+     وضع مكانها رابط Supabase الكامل.
+     مثال:
+     https://xxxxxxxx.supabase.co
      ===================================================== */
 
   const SUPABASE_URL = "https://bjiasnxdqxbxobqaovgh.supabase.co/rest/v1/";
+
+
+  /* =====================================================
+     🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢
+     🟢🟢🟢  مفتاح Supabase هنا  🟢🟢🟢
+     
+     احذف فقط عبارة "ضع المفتاح هنا"
+     وضع مكانها مفتاح Supabase الكامل.
+     ===================================================== */
 
   const SUPABASE_KEY = "sb_publishable_E5cMO9MoOnCt7QwUJrRcZw_WwaLK8b6";
 
@@ -1316,247 +1321,4 @@
       <div class="review-item">
         <strong>مستند إضافي:</strong>
         ${extra ? escapeHtml(extra.name) : "لم يتم اختيار ملف"}
-      </div>
-    `;
-
-
-    if (notes) {
-
-      html += `
-        <div class="review-item">
-          <strong>ملاحظات:</strong>
-          ${escapeHtml(notes)}
-        </div>
-      `;
-
-    }
-
-
-    document.getElementById("reviewBox").innerHTML = html;
-
-  }
-
-
-  /* =====================================================
-     حماية عرض النصوص
-     ===================================================== */
-
-  function escapeHtml(text) {
-
-    return String(text)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-
-  }
-
-
-  /* =====================================================
-     إرسال الطلب إلى Supabase
-     ===================================================== */
-
-  async function submitApplication() {
-
-    hideError();
-
-
-    if (!validateStep(5)) {
-
-      return;
-
-    }
-
-
-    const submitButton =
-      document.getElementById("submitButton");
-
-    const loading =
-      document.getElementById("loading");
-
-
-    submitButton.disabled = true;
-
-    loading.style.display = "block";
-
-
-    try {
-
-      let major =
-        document.getElementById("major").value;
-
-      const otherMajor =
-        document.getElementById("other_major").value.trim();
-
-
-      if (major === "تخصص آخر" && otherMajor) {
-
-        major = otherMajor;
-
-      }
-
-
-      const applicationData = {
-
-        full_name:
-          document.getElementById("full_name").value.trim(),
-
-        phone:
-          document.getElementById("phone").value.trim(),
-
-        email:
-          document.getElementById("email").value.trim(),
-
-        application_type:
-          document.getElementById("application_type").value,
-
-        country:
-          document.getElementById("country").value,
-
-        major:
-          major,
-
-        birth_date:
-          document.getElementById("birth_date").value,
-
-        gender:
-          document.getElementById("gender").value,
-
-        nationality:
-          document.getElementById("nationality").value.trim(),
-
-        qualification:
-          document.getElementById("qualification").value,
-
-        grade:
-          document.getElementById("grade").value.trim(),
-
-        percentage:
-          document.getElementById("percentage").value,
-
-        status:
-          "جديد",
-
-        notes:
-          document.getElementById("notes").value.trim()
-
-      };
-
-
-      /* إرسال البيانات إلى جدول applications */
-
-      const { data, error } =
-        await supabaseClient
-          .from("applications")
-          .insert([applicationData])
-          .select()
-          .single();
-
-
-      if (error) {
-
-        console.error(error);
-
-        throw error;
-
-      }
-
-
-      /* حفظ رقم الطلب مؤقتًا */
-
-      localStorage.setItem(
-        "lastApplicationId",
-        data.id
-      );
-
-
-      /* إخفاء النموذج */
-
-      document
-        .getElementById("formStep" + currentStep)
-        .classList.remove("active");
-
-
-      /* إظهار النجاح */
-
-      document
-        .getElementById("successStep")
-        .classList.add("active");
-
-
-      document
-        .getElementById("applicationNumber")
-        .innerText = data.id;
-
-
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
-
-
-    } catch (error) {
-
-      console.error("Supabase Error:", error);
-
-      let message =
-        "حدث خطأ أثناء إرسال الطلب.";
-
-
-      if (error && error.message) {
-
-        message +=
-          "\n\nتفاصيل الخطأ:\n" +
-          error.message;
-
-      }
-
-
-      showError(message);
-
-      submitButton.disabled = false;
-
-    }
-
-
-    loading.style.display = "none";
-
-  }
-
-
-  /* =====================================================
-     إظهار التخصص الآخر
-     ===================================================== */
-
-  document
-    .getElementById("major")
-    .addEventListener("change", function () {
-
-      const otherMajor =
-        document.getElementById("other_major");
-
-      if (this.value === "تخصص آخر") {
-
-        otherMajor.style.display = "block";
-
-      } else {
-
-        otherMajor.style.display = "none";
-
-        otherMajor.value = "";
-
-      }
-
-    });
-
-
-  /* إخفاء خانة التخصص الآخر في البداية */
-
-  document.getElementById("other_major").style.display = "none";
-
-
-</script>
-
-</body>
-</html>
+      </div
