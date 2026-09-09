@@ -5,19 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>مراجعة الطلب - مكتب الوسام</title>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     * {
       box-sizing: border-box;
     }
 
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      overflow-x: hidden;
-    }
-
     body {
+      margin: 0;
       font-family: Arial, Tahoma, sans-serif;
       background: #f4f7fb;
       color: #222;
@@ -26,29 +22,26 @@
     .container {
       width: 100%;
       max-width: 700px;
-      margin: 30px auto;
-      padding: 20px;
+      margin: 25px auto;
+      padding: 15px;
     }
 
     .card {
       background: white;
       border-radius: 16px;
       padding: 25px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+      box-shadow: 0 5px 20px rgba(0,0,0,.08);
     }
 
     h1 {
       text-align: center;
-      margin-top: 0;
       color: #123b63;
-      font-size: 26px;
     }
 
     .step {
       text-align: center;
       color: #777;
       margin-bottom: 25px;
-      font-size: 15px;
     }
 
     .section {
@@ -58,20 +51,15 @@
       margin-bottom: 18px;
     }
 
-    .section h2 {
-      margin-top: 0;
+    h2 {
       color: #123b63;
       font-size: 19px;
-      border-bottom: 1px solid #eee;
-      padding-bottom: 10px;
+      margin-top: 0;
     }
 
     .row {
-      display: flex;
-      justify-content: space-between;
-      gap: 15px;
-      padding: 9px 0;
-      border-bottom: 1px solid #f0f0f0;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
     }
 
     .row:last-child {
@@ -83,15 +71,10 @@
       color: #555;
     }
 
-    .value {
-      text-align: left;
-      word-break: break-word;
-    }
-
     .file {
       background: #f7f9fb;
-      border-radius: 8px;
       padding: 10px;
+      border-radius: 8px;
       margin: 8px 0;
       word-break: break-word;
     }
@@ -104,7 +87,7 @@
 
     button {
       flex: 1;
-      border: none;
+      border: 0;
       padding: 14px;
       border-radius: 10px;
       font-size: 16px;
@@ -113,7 +96,6 @@
 
     .back {
       background: #e5e7eb;
-      color: #222;
     }
 
     .submit {
@@ -122,39 +104,19 @@
     }
 
     button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
+      opacity: .6;
     }
 
-    .empty {
+    #message {
+      display: none;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 20px;
       text-align: center;
-      padding: 20px;
-      color: #777;
+      word-break: break-word;
     }
 
-    @media (max-width: 600px) {
-      .container {
-        margin: 10px auto;
-        padding: 10px;
-      }
-
-      .card {
-        padding: 18px;
-      }
-
-      h1 {
-        font-size: 22px;
-      }
-
-      .row {
-        flex-direction: column;
-        gap: 4px;
-      }
-
-      .value {
-        text-align: right;
-      }
-
+    @media(max-width:600px) {
       .buttons {
         flex-direction: column;
       }
@@ -164,176 +126,372 @@
 
 <body>
 
-  <div class="container">
-    <div class="card">
+<div class="container">
 
-      <h1>مراجعة طلب التقديم</h1>
+  <div class="card">
 
-      <div class="step">
-        الخطوة الثالثة: مراجعة البيانات قبل الإرسال
+    <h1>مراجعة طلب التقديم</h1>
+
+    <div class="step">
+      الخطوة الثالثة: مراجعة البيانات قبل الإرسال
+    </div>
+
+    <div id="content"></div>
+
+    <div id="message"></div>
+
+    <div class="buttons">
+
+      <button class="back" onclick="goBack()">
+        → السابق
+      </button>
+
+      <button class="submit" id="submitBtn" onclick="submitApplication()">
+        إرسال الطلب ✓
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+/* =====================================================
+   بيانات Supabase
+   ===================================================== */
+
+/*
+   ⬅️ هنا تضع رابط URL الخاص بمشروع Supabase
+   الرابط الذي نسخته من خانة Project URL
+*/
+
+const SUPABASE_URL = "https://bjiasnxdqxbxobqaovgh.supabase.co/rest/v1/";
+
+
+/*
+   ⬅️ هنا تضع مفتاح KEY الخاص بـ Supabase
+   المفتاح الذي نسخته من خانة Publishable key
+*/
+
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_E5cMO9MoOnCt7QwUJrRcZw_WwaLK8b6";
+
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
+
+
+/* =====================================================
+   البيانات المحفوظة من الصفحات السابقة
+   ===================================================== */
+
+const applicationData =
+  JSON.parse(localStorage.getItem("applicationData")) || {};
+
+const applicationDocuments =
+  JSON.parse(localStorage.getItem("applicationDocuments")) || {};
+
+
+/* =====================================================
+   عرض البيانات
+   ===================================================== */
+
+function row(label, value) {
+
+  return `
+    <div class="row">
+
+      <div class="label">
+        ${label}
       </div>
 
-      <div id="content"></div>
-
-      <div class="buttons">
-        <button class="back" onclick="goBack()">
-          → السابق
-        </button>
-
-        <button class="submit" id="submitBtn" onclick="submitApplication()">
-          إرسال الطلب ✓
-        </button>
+      <div>
+        ${value || "غير موجود"}
       </div>
 
     </div>
-  </div>
+  `;
+}
 
-  <script>
 
-    const applicationData =
-      JSON.parse(localStorage.getItem("applicationData")) || {};
+function showData() {
 
-    const applicationDocuments =
-      JSON.parse(localStorage.getItem("applicationDocuments")) || {};
+  document.getElementById("content").innerHTML = `
 
-    const content = document.getElementById("content");
+    <div class="section">
 
-    function row(label, value) {
-      return `
-        <div class="row">
-          <div class="label">${label}</div>
-          <div class="value">${value || "غير موجود"}</div>
-        </div>
-      `;
+      <h2>📚 بيانات التقديم</h2>
+
+      ${row("الفئة", applicationData.category)}
+
+      ${row("الدولة", applicationData.country)}
+
+      ${row("التخصص", applicationData.major)}
+
+    </div>
+
+
+    <div class="section">
+
+      <h2>👤 البيانات الشخصية</h2>
+
+      ${row("الاسم الكامل", applicationData.name)}
+
+      ${row("رقم الهاتف", applicationData.phone)}
+
+      ${row("الجنسية", applicationData.nationality)}
+
+    </div>
+
+
+    <div class="section">
+
+      <h2>📄 المستندات</h2>
+
+      <div class="file">
+        🛂 الجواز:
+        <strong>
+          ${applicationDocuments.passport || "لم يتم اختيار الملف"}
+        </strong>
+      </div>
+
+      <div class="file">
+        🎓 شهادة الثانوية:
+        <strong>
+          ${applicationDocuments.certificate || "لم يتم اختيار الملف"}
+        </strong>
+      </div>
+
+      <div class="file">
+        🎂 شهادة الميلاد:
+        <strong>
+          ${applicationDocuments.birth || "لم يتم اختيار الملف"}
+        </strong>
+      </div>
+
+      <div class="file">
+        🖼️ الصورة الشخصية:
+        <strong>
+          ${applicationDocuments.photo || "لم يتم اختيار الملف"}
+        </strong>
+      </div>
+
+      <div class="file">
+        📝 خطاب الدافع:
+        <strong>
+          ${applicationDocuments.motivation || "لم يتم اختيار الملف"}
+        </strong>
+      </div>
+
+      <div class="file">
+        📑 خطاب التوصية:
+        <strong>
+          ${applicationDocuments.recommendation || "لم يتم اختيار الملف"}
+        </strong>
+      </div>
+
+    </div>
+
+  `;
+}
+
+
+/* =====================================================
+   الرسائل
+   ===================================================== */
+
+function showMessage(text, error = true) {
+
+  const message = document.getElementById("message");
+
+  message.style.display = "block";
+
+  message.textContent = text;
+
+  if (error) {
+
+    message.style.background = "#fee2e2";
+
+    message.style.color = "#991b1b";
+
+  } else {
+
+    message.style.background = "#dcfce7";
+
+    message.style.color = "#166534";
+
+  }
+}
+
+
+/* =====================================================
+   الرجوع
+   ===================================================== */
+
+function goBack() {
+
+  window.location.href = "documents.html?v=999";
+
+}
+
+
+/* =====================================================
+   إرسال الطلب
+   ===================================================== */
+
+async function submitApplication() {
+
+  const button =
+    document.getElementById("submitBtn");
+
+  button.disabled = true;
+
+  button.textContent =
+    "جاري إرسال الطلب...";
+
+  showMessage(
+    "جاري الاتصال بالنظام...",
+    false
+  );
+
+
+  try {
+
+    /* التأكد من تسجيل دخول الطالب */
+
+    const {
+      data: { user },
+      error: userError
+    } =
+      await supabaseClient.auth.getUser();
+
+
+    if (userError) {
+
+      throw userError;
+
     }
 
-    function showData() {
 
-      if (!applicationData || Object.keys(applicationData).length === 0) {
-        content.innerHTML = `
-          <div class="empty">
-            لا توجد بيانات محفوظة للطلب.
-          </div>
-        `;
-        return;
-      }
+    if (!user) {
 
-      content.innerHTML = `
-
-        <div class="section">
-          <h2>📚 بيانات التقديم</h2>
-
-          ${row("الفئة", applicationData.category)}
-          ${row("الدولة", applicationData.country)}
-          ${row("التخصص", applicationData.major)}
-        </div>
-
-
-        <div class="section">
-          <h2>👤 البيانات الشخصية</h2>
-
-          ${row("الاسم الكامل", applicationData.name)}
-          ${row("رقم الهاتف", applicationData.phone)}
-          ${row("الجنسية", applicationData.nationality)}
-        </div>
-
-
-        <div class="section">
-          <h2>📄 المستندات</h2>
-
-          <div class="file">
-            🛂 الجواز:
-            <strong>
-              ${applicationDocuments.passport || "لم يتم اختيار الملف"}
-            </strong>
-          </div>
-
-          <div class="file">
-            🎓 شهادة الثانوية:
-            <strong>
-              ${applicationDocuments.certificate || "لم يتم اختيار الملف"}
-            </strong>
-          </div>
-
-          <div class="file">
-            🎂 شهادة الميلاد:
-            <strong>
-              ${applicationDocuments.birth || "لم يتم اختيار الملف"}
-            </strong>
-          </div>
-
-          <div class="file">
-            🖼️ الصورة الشخصية:
-            <strong>
-              ${applicationDocuments.photo || "لم يتم اختيار الملف"}
-            </strong>
-          </div>
-
-          <div class="file">
-            📝 خطاب الدافع:
-            <strong>
-              ${applicationDocuments.motivation || "لم يتم اختيار الملف"}
-            </strong>
-          </div>
-
-          <div class="file">
-            📑 خطاب التوصية:
-            <strong>
-              ${applicationDocuments.recommendation || "لم يتم اختيار الملف"}
-            </strong>
-          </div>
-
-        </div>
-
-      `;
-    }
-
-
-    function goBack() {
-      window.location.href = "documents.html?v=999";
-    }
-
-
-    function submitApplication() {
-
-      const passport = applicationDocuments.passport;
-      const certificate = applicationDocuments.certificate;
-
-      if (!passport || !certificate) {
-        alert("يجب إرفاق الجواز وشهادة الثانوية قبل إرسال الطلب.");
-        return;
-      }
-
-      const button = document.getElementById("submitBtn");
-
-      button.disabled = true;
-      button.textContent = "جاري إرسال الطلب...";
-
-      // رقم طلب مؤقت إلى أن نربط الإرسال بقاعدة بيانات Supabase
-      const applicationNumber =
-        "ALW-" +
-        Date.now().toString().slice(-8);
-
-      localStorage.setItem(
-        "applicationNumber",
-        applicationNumber
+      showMessage(
+        "يجب تسجيل الدخول أولاً قبل إرسال الطلب."
       );
 
-      localStorage.setItem(
-        "applicationStatus",
-        "تم استلام الطلب"
-      );
+      button.disabled = false;
 
-      setTimeout(function() {
-        window.location.href =
-          "success.html?v=999";
-      }, 800);
+      button.textContent =
+        "إرسال الطلب ✓";
+
+      return;
     }
 
 
-    showData();
+    /* إنشاء رقم الطلب */
 
-  </script>
+    const applicationNumber =
+      "ALW-" +
+      Date.now().toString().slice(-8);
+
+
+    /* حفظ الطلب في Supabase */
+
+    const { data, error } =
+      await supabaseClient
+        .from("applications")
+        .insert({
+
+          user_id: user.id,
+
+          application_number:
+            applicationNumber,
+
+          full_name:
+            applicationData.name || null,
+
+          phone:
+            applicationData.phone || null,
+
+          nationality:
+            applicationData.nationality || null,
+
+          category:
+            applicationData.category || null,
+
+          country:
+            applicationData.country || null,
+
+          major:
+            applicationData.major || null
+
+        })
+        .select()
+        .single();
+
+
+    if (error) {
+
+      throw error;
+
+    }
+
+
+    /* حفظ رقم الطلب */
+
+    localStorage.setItem(
+      "applicationNumber",
+      applicationNumber
+    );
+
+
+    localStorage.setItem(
+      "applicationStatus",
+      "تم استلام الطلب"
+    );
+
+
+    showMessage(
+      "تم إنشاء الطلب بنجاح. جارٍ الانتقال...",
+      false
+    );
+
+
+    setTimeout(function() {
+
+      window.location.href =
+        "success.html?v=999";
+
+    }, 1000);
+
+
+  } catch (error) {
+
+    console.error(error);
+
+    showMessage(
+      "حدث خطأ أثناء إرسال الطلب: " +
+      (error.message || error)
+    );
+
+
+    button.disabled = false;
+
+    button.textContent =
+      "إرسال الطلب ✓";
+  }
+
+}
+
+
+/* تشغيل الصفحة */
+
+showData();
+
+</script>
 
 </body>
 </html>
