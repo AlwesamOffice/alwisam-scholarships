@@ -3,228 +3,313 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>التقديم - مكتب الوسام</title>
+
+  <title>مكتب الوسام للتقديم والمنح</title>
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     * {
       box-sizing: border-box;
+      font-family: Tahoma, Arial, sans-serif;
     }
 
     body {
-      font-family: Arial, sans-serif;
-      background: #f4f6f8;
       margin: 0;
-      padding: 20px;
+      background: #f4f7fb;
       color: #222;
     }
 
-    .box {
-      max-width: 700px;
-      margin: 20px auto;
-      background: white;
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 3px 15px #ccc;
-    }
-
-    h1 {
+    header {
+      background: linear-gradient(135deg, #0b3d91, #1261c9);
+      color: white;
+      padding: 25px 15px;
       text-align: center;
-      color: #1d4f91;
-      margin-bottom: 8px;
     }
 
-    h2 {
-      color: #333;
-      margin-top: 10px;
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 26px;
     }
 
-    .note {
-      background: #eef4fb;
-      padding: 12px;
-      border-radius: 8px;
-      margin: 15px 0;
-      line-height: 1.8;
+    header p {
+      margin: 0;
+      font-size: 15px;
+    }
+
+    .container {
+      width: 95%;
+      max-width: 850px;
+      margin: 25px auto;
+    }
+
+    .card {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 4px 18px rgba(0,0,0,.08);
     }
 
     .steps {
       display: flex;
       justify-content: space-between;
+      margin-bottom: 25px;
       gap: 5px;
-      margin: 20px 0;
     }
 
     .step {
       flex: 1;
       text-align: center;
+      padding: 10px 4px;
+      background: #e5eaf2;
+      color: #555;
+      border-radius: 8px;
       font-size: 12px;
-      color: #999;
-      position: relative;
-    }
-
-    .step-number {
-      width: 30px;
-      height: 30px;
-      margin: auto;
-      border-radius: 50%;
-      background: #ddd;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
     }
 
     .step.active {
-      color: #1d4f91;
-      font-weight: bold;
-    }
-
-    .step.active .step-number {
-      background: #1d4f91;
+      background: #1261c9;
       color: white;
     }
 
-    .step.done .step-number {
-      background: #28a745;
+    .step.done {
+      background: #198754;
       color: white;
     }
 
-    .page {
+    .form-step {
       display: none;
     }
 
-    .page.active {
+    .form-step.active {
       display: block;
+    }
+
+    h2 {
+      color: #0b3d91;
+      margin-top: 0;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      background: #eef4ff;
+      padding: 12px;
+      border-right: 4px solid #1261c9;
+      margin: 20px 0 15px;
+      font-weight: bold;
+      color: #0b3d91;
     }
 
     label {
       display: block;
-      margin-top: 18px;
+      margin-bottom: 7px;
       font-weight: bold;
     }
 
     input,
-    select {
+    select,
+    textarea {
       width: 100%;
-      padding: 13px;
-      margin-top: 7px;
-      border: 1px solid #ccc;
+      padding: 12px;
+      border: 1px solid #ccd4df;
       border-radius: 8px;
+      margin-bottom: 16px;
       font-size: 15px;
       background: white;
     }
 
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
     input:focus,
-    select:focus {
+    select:focus,
+    textarea:focus {
       outline: none;
-      border-color: #1d4f91;
+      border-color: #1261c9;
+      box-shadow: 0 0 0 2px rgba(18,97,201,.1);
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
     }
 
     .buttons {
       display: flex;
+      justify-content: space-between;
       gap: 10px;
-      margin-top: 25px;
+      margin-top: 20px;
     }
 
     button {
-      flex: 1;
-      padding: 14px;
-      background: #1d4f91;
-      color: white;
       border: none;
+      padding: 13px 25px;
       border-radius: 8px;
-      font-size: 17px;
       cursor: pointer;
+      font-size: 15px;
+      font-weight: bold;
     }
 
-    button:hover {
-      opacity: 0.9;
+    .next-btn {
+      background: #1261c9;
+      color: white;
+      flex: 1;
     }
 
-    .back {
-      background: #777;
+    .prev-btn {
+      background: #6c757d;
+      color: white;
+      flex: 1;
     }
 
-    .submit {
+    .submit-btn {
       background: #198754;
+      color: white;
+      flex: 1;
     }
 
-    .error {
-      color: #c62828;
-      background: #ffebee;
-      padding: 10px;
-      border-radius: 8px;
-      margin-top: 15px;
-      display: none;
-    }
-
-    .review {
-      background: #f8f9fa;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      padding: 15px;
-      line-height: 2;
-    }
-
-    .review-row {
-      border-bottom: 1px solid #ddd;
-      padding: 7px 0;
-    }
-
-    .review-row:last-child {
-      border-bottom: none;
-    }
-
-    .success {
-      display: none;
-      text-align: center;
-      padding: 30px 10px;
-    }
-
-    .success-icon {
-      font-size: 60px;
+    button:disabled {
+      opacity: .6;
+      cursor: not-allowed;
     }
 
     .required {
       color: red;
     }
 
-    .checkbox-box {
-      background: #f8f9fa;
-      padding: 15px;
-      border-radius: 10px;
-      margin-top: 20px;
-    }
-
-    .checkbox-box label {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin: 0;
-      font-weight: normal;
+    .notice {
+      background: #fff8df;
+      border: 1px solid #f0d878;
+      padding: 14px;
+      border-radius: 8px;
+      margin-bottom: 20px;
       line-height: 1.8;
     }
 
-    .checkbox-box input {
-      width: auto;
-      margin: 0;
+    .privacy {
+      background: #f5f5f5;
+      padding: 15px;
+      border-radius: 8px;
+      line-height: 1.8;
+      margin-bottom: 15px;
     }
 
-    @media (max-width: 500px) {
-      .box {
+    .check-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin: 15px 0;
+      font-weight: normal;
+    }
+
+    .check-row input {
+      width: auto;
+      margin: 4px 0 0;
+    }
+
+    .file-box {
+      border: 2px dashed #cbd5e1;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      background: #fafcff;
+    }
+
+    .file-box input {
+      margin-bottom: 5px;
+    }
+
+    .review-box {
+      background: #f8fafc;
+      border: 1px solid #dde4ec;
+      border-radius: 10px;
+      padding: 15px;
+      line-height: 2;
+    }
+
+    .review-item {
+      border-bottom: 1px solid #e5e7eb;
+      padding: 6px 0;
+    }
+
+    .review-item:last-child {
+      border-bottom: none;
+    }
+
+    .success {
+      text-align: center;
+      padding: 35px 15px;
+    }
+
+    .success-icon {
+      font-size: 65px;
+      margin-bottom: 15px;
+    }
+
+    .success h2 {
+      color: #198754;
+    }
+
+    .application-number {
+      background: #eef8f2;
+      border: 1px solid #a8d5ba;
+      padding: 15px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .error-message {
+      display: none;
+      background: #ffe5e5;
+      color: #a40000;
+      border: 1px solid #ffb5b5;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      line-height: 1.7;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 15px;
+      color: #0b3d91;
+      font-weight: bold;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: #666;
+      font-size: 13px;
+    }
+
+    @media (max-width: 650px) {
+      .row {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+
+      .card {
         padding: 18px;
       }
 
       .steps {
-        gap: 2px;
+        overflow-x: auto;
       }
 
       .step {
-        font-size: 9px;
+        min-width: 75px;
       }
 
-      .step-number {
-        width: 27px;
-        height: 27px;
+      header h1 {
+        font-size: 21px;
       }
     }
   </style>
@@ -232,725 +317,814 @@
 
 <body>
 
-<div class="box">
+<header>
+  <h1>🎓 مكتب الوسام للتقديم والمنح</h1>
+  <p>نموذج التقديم على المنح والقبول الجامعي</p>
+</header>
 
-  <h1>🎓 مكتب الوسام</h1>
-  <h2>استمارة التقديم</h2>
+<div class="container">
 
-  <div class="note">
-    يرجى تعبئة البيانات المطلوبة بشكل صحيح. يمكنك استخدام زر
-    <strong>السابق</strong> للرجوع وتعديل أي بيانات قبل الإرسال.
-  </div>
+  <div class="card">
 
-  <!-- مراحل النموذج -->
-  <div class="steps">
-
-    <div class="step active" id="step1">
-      <div class="step-number">1</div>
-      التقديم
+    <!-- الخطوات -->
+    <div class="steps">
+      <div class="step active" id="stepIndicator1">1<br>التقديم</div>
+      <div class="step" id="stepIndicator2">2<br>البيانات</div>
+      <div class="step" id="stepIndicator3">3<br>المؤهل</div>
+      <div class="step" id="stepIndicator4">4<br>المستندات</div>
+      <div class="step" id="stepIndicator5">5<br>الموافقة</div>
+      <div class="step" id="stepIndicator6">6<br>المراجعة</div>
     </div>
 
-    <div class="step" id="step2">
-      <div class="step-number">2</div>
-      البيانات
-    </div>
+    <div id="errorMessage" class="error-message"></div>
 
-    <div class="step" id="step3">
-      <div class="step-number">3</div>
-      المؤهل
-    </div>
+    <!-- ========================= -->
+    <!-- الخطوة 1 -->
+    <!-- ========================= -->
 
-    <div class="step" id="step4">
-      <div class="step-number">4</div>
-      المستندات
-    </div>
+    <div class="form-step active" id="formStep1">
 
-    <div class="step" id="step5">
-      <div class="step-number">5</div>
-      الخصوصية
-    </div>
+      <h2>نوع التقديم والتخصص</h2>
 
-    <div class="step" id="step6">
-      <div class="step-number">6</div>
-      المراجعة
-    </div>
-
-  </div>
-
-
-  <!-- ========================= -->
-  <!-- الخطوة 1 -->
-  <!-- ========================= -->
-
-  <div class="page active" id="page1">
-
-    <h2>1️⃣ اختيار التقديم</h2>
-
-    <label>
-      نوع التقديم <span class="required">*</span>
-    </label>
-
-    <select id="category">
-      <option value="">اختر نوع التقديم</option>
-      <option value="المنح الجامعية">المنح الجامعية</option>
-      <option value="الجامعات الحكومية">الجامعات الحكومية</option>
-      <option value="الجامعات الخاصة">الجامعات الخاصة</option>
-    </select>
-
-
-    <label>
-      الدولة <span class="required">*</span>
-    </label>
-
-    <select id="country">
-      <option value="">اختر الدولة</option>
-      <option value="السعودية">السعودية</option>
-      <option value="مصر">مصر</option>
-      <option value="الصين">الصين</option>
-      <option value="تركيا">تركيا</option>
-    </select>
-
-
-    <label>
-      التخصص <span class="required">*</span>
-    </label>
-
-    <select id="major">
-
-      <option value="">اختر التخصص</option>
-
-      <optgroup label="الطب والصحة">
-        <option>الطب البشري</option>
-        <option>طب الأسنان</option>
-        <option>الصيدلة</option>
-        <option>التمريض</option>
-        <option>العلاج الطبيعي</option>
-        <option>العلاج الوظيفي</option>
-        <option>المختبرات الطبية</option>
-        <option>الأشعة والتصوير الطبي</option>
-        <option>التغذية العلاجية</option>
-        <option>الصحة العامة</option>
-        <option>الإسعاف والطوارئ</option>
-        <option>البصريات</option>
-        <option>السمعيات</option>
-        <option>العلوم الطبية التطبيقية</option>
-      </optgroup>
-
-      <optgroup label="الهندسة">
-        <option>الهندسة المدنية</option>
-        <option>الهندسة المعمارية</option>
-        <option>الهندسة الكهربائية</option>
-        <option>هندسة الإلكترونيات</option>
-        <option>هندسة الاتصالات</option>
-        <option>الهندسة الميكانيكية</option>
-        <option>الهندسة الصناعية</option>
-        <option>الهندسة الكيميائية</option>
-        <option>هندسة البترول</option>
-        <option>هندسة الطاقة</option>
-        <option>هندسة الطيران</option>
-        <option>هندسة السيارات</option>
-        <option>هندسة المواد</option>
-        <option>الهندسة البيئية</option>
-        <option>هندسة التعدين</option>
-        <option>هندسة الروبوتات</option>
-      </optgroup>
-
-      <optgroup label="الحاسب وتقنية المعلومات">
-        <option>علوم الحاسوب</option>
-        <option>تقنية المعلومات</option>
-        <option>هندسة البرمجيات</option>
-        <option>نظم المعلومات</option>
-        <option>نظم المعلومات الإدارية</option>
-        <option>الذكاء الاصطناعي</option>
-        <option>علم البيانات</option>
-        <option>الأمن السيبراني</option>
-        <option>الشبكات</option>
-        <option>تطوير البرمجيات</option>
-        <option>هندسة الحاسوب</option>
-        <option>الحوسبة السحابية</option>
-      </optgroup>
-
-      <optgroup label="إدارة واقتصاد">
-        <option>إدارة الأعمال</option>
-        <option>المحاسبة</option>
-        <option>الاقتصاد</option>
-        <option>التمويل</option>
-        <option>التسويق</option>
-        <option>إدارة الموارد البشرية</option>
-        <option>إدارة المشاريع</option>
-        <option>التجارة الدولية</option>
-        <option>العلوم المصرفية</option>
-        <option>ريادة الأعمال</option>
-      </optgroup>
-
-      <optgroup label="القانون والعلوم السياسية">
-        <option>القانون</option>
-        <option>الحقوق</option>
-        <option>العلوم السياسية</option>
-        <option>العلاقات الدولية</option>
-        <option>الدراسات الدبلوماسية</option>
-      </optgroup>
-
-      <optgroup label="التربية والعلوم الإنسانية">
-        <option>التربية</option>
-        <option>اللغة العربية</option>
-        <option>اللغة الإنجليزية</option>
-        <option>الترجمة</option>
-        <option>علم النفس</option>
-        <option>علم الاجتماع</option>
-        <option>التاريخ</option>
-        <option>الجغرافيا</option>
-        <option>الفلسفة</option>
-      </optgroup>
-
-      <optgroup label="العلوم">
-        <option>الرياضيات</option>
-        <option>الفيزياء</option>
-        <option>الكيمياء</option>
-        <option>الأحياء</option>
-        <option>الجيولوجيا</option>
-        <option>العلوم البيئية</option>
-      </optgroup>
-
-      <optgroup label="الإعلام والفنون">
-        <option>الإعلام</option>
-        <option>الصحافة</option>
-        <option>العلاقات العامة</option>
-        <option>التصميم الجرافيكي</option>
-        <option>التصميم الداخلي</option>
-        <option>الفنون الجميلة</option>
-        <option>السينما والإنتاج</option>
-      </optgroup>
-
-    </select>
-
-    <div class="error" id="error1">
-      يرجى إكمال جميع الاختيارات المطلوبة.
-    </div>
-
-    <div class="buttons">
-      <button onclick="nextStep()">التالي ➜</button>
-    </div>
-
-  </div>
-
-
-  <!-- ========================= -->
-  <!-- الخطوة 2 -->
-  <!-- ========================= -->
-
-  <div class="page" id="page2">
-
-    <h2>2️⃣ البيانات الشخصية</h2>
-
-    <label>
-      الاسم الكامل <span class="required">*</span>
-    </label>
-
-    <input type="text" id="fullName" placeholder="اكتب الاسم الكامل">
-
-
-    <label>
-      رقم الهاتف <span class="required">*</span>
-    </label>
-
-    <input type="tel" id="phone" placeholder="مثال: 968XXXXXXXX">
-
-
-    <label>
-      البريد الإلكتروني <span class="required">*</span>
-    </label>
-
-    <input type="email" id="email" placeholder="example@email.com">
-
-
-    <label>
-      الجنسية <span class="required">*</span>
-    </label>
-
-    <input type="text" id="nationality" placeholder="اكتب الجنسية">
-
-
-    <label>
-      تاريخ الميلاد <span class="required">*</span>
-    </label>
-
-    <input type="date" id="birthDate">
-
-
-    <div class="error" id="error2">
-      يرجى تعبئة جميع البيانات المطلوبة بشكل صحيح.
-    </div>
-
-    <div class="buttons">
-      <button class="back" onclick="prevStep()">← السابق</button>
-      <button onclick="nextStep()">التالي ➜</button>
-    </div>
-
-  </div>
-
-
-  <!-- ========================= -->
-  <!-- الخطوة 3 -->
-  <!-- ========================= -->
-
-  <div class="page" id="page3">
-
-    <h2>3️⃣ المؤهل الدراسي والمعدل</h2>
-
-    <label>
-      آخر مؤهل دراسي <span class="required">*</span>
-    </label>
-
-    <select id="qualification">
-
-      <option value="">اختر المؤهل</option>
-      <option>الثانوية العامة</option>
-      <option>دبلوم</option>
-      <option>بكالوريوس</option>
-      <option>ماجستير</option>
-      <option>دكتوراه</option>
-
-    </select>
-
-
-    <label>
-      سنة التخرج <span class="required">*</span>
-    </label>
-
-    <input
-      type="number"
-      id="graduationYear"
-      placeholder="مثال: 2026"
-      min="1950"
-      max="2100"
-    >
-
-
-    <label>
-      المعدل <span class="required">*</span>
-    </label>
-
-    <input
-      type="number"
-      id="average"
-      placeholder="مثال: 85"
-      min="0"
-      max="100"
-      step="0.01"
-    >
-
-
-    <label>
-      نظام المعدل <span class="required">*</span>
-    </label>
-
-    <select id="averageSystem">
-
-      <option value="">اختر النظام</option>
-      <option value="من 100">من 100</option>
-      <option value="من 4">من 4</option>
-      <option value="من 5">من 5</option>
-      <option value="نسبة مئوية">نسبة مئوية</option>
-
-    </select>
-
-
-    <div class="error" id="error3">
-      يرجى إكمال بيانات المؤهل والمعدل.
-    </div>
-
-    <div class="buttons">
-      <button class="back" onclick="prevStep()">← السابق</button>
-      <button onclick="nextStep()">التالي ➜</button>
-    </div>
-
-  </div>
-
-
-  <!-- ========================= -->
-  <!-- الخطوة 4 -->
-  <!-- ========================= -->
-
-  <div class="page" id="page4">
-
-    <h2>4️⃣ المستندات</h2>
-
-    <div class="note">
-      قم بإرفاق المستندات المطلوبة. يمكنك إضافة الملفات من هاتفك أو جهاز الكمبيوتر.
-    </div>
-
-
-    <label>
-      الشهادة الدراسية <span class="required">*</span>
-    </label>
-
-    <input type="file" id="certificate" accept=".pdf,.jpg,.jpeg,.png">
-
-
-    <label>
-      جواز السفر أو الهوية <span class="required">*</span>
-    </label>
-
-    <input type="file" id="identity" accept=".pdf,.jpg,.jpeg,.png">
-
-
-    <label>
-      صورة شخصية
-    </label>
-
-    <input type="file" id="photo" accept=".jpg,.jpeg,.png">
-
-
-    <label>
-      مستند إضافي
-    </label>
-
-    <input type="file" id="extraDocument" accept=".pdf,.jpg,.jpeg,.png">
-
-
-    <div class="error" id="error4">
-      يرجى إرفاق الشهادة الدراسية وجواز السفر أو الهوية.
-    </div>
-
-    <div class="buttons">
-      <button class="back" onclick="prevStep()">← السابق</button>
-      <button onclick="nextStep()">التالي ➜</button>
-    </div>
-
-  </div>
-
-
-  <!-- ========================= -->
-  <!-- الخطوة 5 -->
-  <!-- ========================= -->
-
-  <div class="page" id="page5">
-
-    <h2>5️⃣ الخصوصية والموافقة</h2>
-
-    <div class="note">
-
-      <strong>سياسة الخصوصية</strong>
-
-      <br><br>
-
-      يتم استخدام البيانات التي تدخلها في هذه الاستمارة لغرض معالجة طلب
-      التقديم ومتابعة إجراءات المنحة أو القبول الجامعي.
-
-      <br><br>
-
-      لن يتم استخدام البيانات لغير أغراض التقديم والمتابعة إلا وفق
-      الإجراءات المعتمدة للمكتب.
-
-    </div>
-
-
-    <div class="checkbox-box">
+      <div class="notice">
+        يرجى اختيار نوع التقديم والدولة والتخصص الذي ترغب في التقديم عليه.
+      </div>
 
       <label>
-
-        <input type="checkbox" id="privacy">
-
-        أوافق على سياسة الخصوصية وأقر بأن البيانات التي أدخلتها صحيحة.
-
+        نوع التقديم <span class="required">*</span>
       </label>
 
+      <select id="application_type" required>
+        <option value="">-- اختر نوع التقديم --</option>
+        <option value="منحة جامعية">منحة جامعية</option>
+        <option value="قبول جامعي">قبول جامعي</option>
+        <option value="منحة ماجستير">منحة ماجستير</option>
+        <option value="منحة دكتوراه">منحة دكتوراه</option>
+        <option value="دبلوم">دبلوم</option>
+      </select>
+
+      <label>
+        الدولة <span class="required">*</span>
+      </label>
+
+      <select id="country" required>
+        <option value="">-- اختر الدولة --</option>
+        <option value="تركيا">تركيا</option>
+        <option value="ماليزيا">ماليزيا</option>
+        <option value="مصر">مصر</option>
+        <option value="السعودية">السعودية</option>
+        <option value="الإمارات">الإمارات</option>
+        <option value="الأردن">الأردن</option>
+        <option value="قطر">قطر</option>
+        <option value="عمان">عمان</option>
+        <option value="المغرب">المغرب</option>
+        <option value="الجزائر">الجزائر</option>
+        <option value="تونس">تونس</option>
+        <option value="العراق">العراق</option>
+        <option value="أخرى">أخرى</option>
+      </select>
+
+      <label>
+        التخصص المطلوب <span class="required">*</span>
+      </label>
+
+      <select id="major" required>
+        <option value="">-- اختر التخصص --</option>
+
+        <optgroup label="التخصصات الصحية والطبية">
+          <option value="الطب البشري">الطب البشري</option>
+          <option value="طب الأسنان">طب الأسنان</option>
+          <option value="الصيدلة">الصيدلة</option>
+          <option value="التمريض">التمريض</option>
+          <option value="العلاج الطبيعي">العلاج الطبيعي</option>
+          <option value="العلاج الوظيفي">العلاج الوظيفي</option>
+          <option value="المختبرات الطبية">المختبرات الطبية</option>
+          <option value="الأشعة والتصوير الطبي">الأشعة والتصوير الطبي</option>
+          <option value="التغذية العلاجية">التغذية العلاجية</option>
+          <option value="الطب البيطري">الطب البيطري</option>
+          <option value="الصحة العامة">الصحة العامة</option>
+          <option value="الإسعاف والطوارئ">الإسعاف والطوارئ</option>
+        </optgroup>
+
+        <optgroup label="الهندسة">
+          <option value="الهندسة المدنية">الهندسة المدنية</option>
+          <option value="الهندسة المعمارية">الهندسة المعمارية</option>
+          <option value="الهندسة الكهربائية">الهندسة الكهربائية</option>
+          <option value="الهندسة الميكانيكية">الهندسة الميكانيكية</option>
+          <option value="الهندسة الكيميائية">الهندسة الكيميائية</option>
+          <option value="هندسة الحاسوب">هندسة الحاسوب</option>
+          <option value="هندسة البرمجيات">هندسة البرمجيات</option>
+          <option value="هندسة الاتصالات">هندسة الاتصالات</option>
+          <option value="هندسة البترول">هندسة البترول</option>
+          <option value="الهندسة الصناعية">الهندسة الصناعية</option>
+          <option value="هندسة الطاقة">هندسة الطاقة</option>
+          <option value="الهندسة البيئية">الهندسة البيئية</option>
+        </optgroup>
+
+        <optgroup label="الحاسب وتقنية المعلومات">
+          <option value="علوم الحاسوب">علوم الحاسوب</option>
+          <option value="تقنية المعلومات">تقنية المعلومات</option>
+          <option value="الأمن السيبراني">الأمن السيبراني</option>
+          <option value="الذكاء الاصطناعي">الذكاء الاصطناعي</option>
+          <option value="علم البيانات">علم البيانات</option>
+          <option value="نظم المعلومات">نظم المعلومات</option>
+          <option value="الشبكات">الشبكات</option>
+          <option value="تطوير البرمجيات">تطوير البرمجيات</option>
+        </optgroup>
+
+        <optgroup label="إدارة واقتصاد">
+          <option value="إدارة الأعمال">إدارة الأعمال</option>
+          <option value="المحاسبة">المحاسبة</option>
+          <option value="الاقتصاد">الاقتصاد</option>
+          <option value="التمويل">التمويل</option>
+          <option value="التسويق">التسويق</option>
+          <option value="إدارة الموارد البشرية">إدارة الموارد البشرية</option>
+          <option value="إدارة المشاريع">إدارة المشاريع</option>
+          <option value="التجارة الدولية">التجارة الدولية</option>
+          <option value="إدارة سلاسل الإمداد">إدارة سلاسل الإمداد</option>
+        </optgroup>
+
+        <optgroup label="القانون والسياسة">
+          <option value="القانون">القانون</option>
+          <option value="العلوم السياسية">العلوم السياسية</option>
+          <option value="العلاقات الدولية">العلاقات الدولية</option>
+          <option value="الدراسات الدبلوماسية">الدراسات الدبلوماسية</option>
+        </optgroup>
+
+        <optgroup label="التربية والعلوم الإنسانية">
+          <option value="التربية">التربية</option>
+          <option value="علم النفس">علم النفس</option>
+          <option value="علم الاجتماع">علم الاجتماع</option>
+          <option value="اللغة العربية">اللغة العربية</option>
+          <option value="اللغة الإنجليزية">اللغة الإنجليزية</option>
+          <option value="الترجمة">الترجمة</option>
+          <option value="التاريخ">التاريخ</option>
+          <option value="الجغرافيا">الجغرافيا</option>
+          <option value="الفلسفة">الفلسفة</option>
+        </optgroup>
+
+        <optgroup label="العلوم">
+          <option value="الرياضيات">الرياضيات</option>
+          <option value="الفيزياء">الفيزياء</option>
+          <option value="الكيمياء">الكيمياء</option>
+          <option value="الأحياء">الأحياء</option>
+          <option value="علوم الأرض">علوم الأرض</option>
+          <option value="العلوم البيئية">العلوم البيئية</option>
+        </optgroup>
+
+        <optgroup label="الإعلام والفنون">
+          <option value="الإعلام">الإعلام</option>
+          <option value="الصحافة">الصحافة</option>
+          <option value="العلاقات العامة">العلاقات العامة</option>
+          <option value="التصميم الجرافيكي">التصميم الجرافيكي</option>
+          <option value="الفنون الجميلة">الفنون الجميلة</option>
+          <option value="التصميم الداخلي">التصميم الداخلي</option>
+          <option value="السينما">السينما</option>
+        </optgroup>
+
+        <option value="تخصص آخر">تخصص آخر</option>
+      </select>
+
+      <label>
+        إذا كان التخصص غير موجود، اكتب التخصص
+      </label>
+
+      <input type="text" id="other_major" placeholder="اكتب التخصص هنا">
+
+      <div class="buttons">
+        <button class="next-btn" onclick="nextStep()">التالي ←</button>
+      </div>
+
     </div>
 
 
-    <div class="error" id="error5">
-      يجب الموافقة على سياسة الخصوصية للمتابعة.
+    <!-- ========================= -->
+    <!-- الخطوة 2 -->
+    <!-- ========================= -->
+
+    <div class="form-step" id="formStep2">
+
+      <h2>البيانات الشخصية</h2>
+
+      <div class="row">
+
+        <div>
+          <label>
+            الاسم الكامل <span class="required">*</span>
+          </label>
+          <input type="text" id="full_name" placeholder="الاسم الكامل">
+        </div>
+
+        <div>
+          <label>
+            رقم الهاتف <span class="required">*</span>
+          </label>
+          <input type="tel" id="phone" placeholder="رقم الهاتف">
+        </div>
+
+      </div>
+
+      <label>
+        البريد الإلكتروني
+      </label>
+
+      <input type="email" id="email" placeholder="example@email.com">
+
+      <div class="row">
+
+        <div>
+          <label>
+            تاريخ الميلاد <span class="required">*</span>
+          </label>
+          <input type="date" id="birth_date">
+        </div>
+
+        <div>
+          <label>
+            الجنس <span class="required">*</span>
+          </label>
+
+          <select id="gender">
+            <option value="">-- اختر --</option>
+            <option value="ذكر">ذكر</option>
+            <option value="أنثى">أنثى</option>
+          </select>
+        </div>
+
+      </div>
+
+      <label>
+        الجنسية <span class="required">*</span>
+      </label>
+
+      <input type="text" id="nationality" placeholder="الجنسية">
+
+      <div class="buttons">
+        <button class="prev-btn" onclick="prevStep()">→ السابق</button>
+        <button class="next-btn" onclick="nextStep()">التالي ←</button>
+      </div>
+
     </div>
 
 
-    <div class="buttons">
-      <button class="back" onclick="prevStep()">← السابق</button>
-      <button onclick="nextStep()">التالي ➜</button>
+    <!-- ========================= -->
+    <!-- الخطوة 3 -->
+    <!-- ========================= -->
+
+    <div class="form-step" id="formStep3">
+
+      <h2>المؤهل الدراسي</h2>
+
+      <label>
+        آخر مؤهل دراسي <span class="required">*</span>
+      </label>
+
+      <select id="qualification">
+        <option value="">-- اختر المؤهل --</option>
+        <option value="الثانوية العامة">الثانوية العامة</option>
+        <option value="الدبلوم">الدبلوم</option>
+        <option value="البكالوريوس">البكالوريوس</option>
+        <option value="الماجستير">الماجستير</option>
+        <option value="الدكتوراه">الدكتوراه</option>
+        <option value="أخرى">أخرى</option>
+      </select>
+
+      <label>
+        اسم المدرسة / الجامعة
+      </label>
+
+      <input type="text" id="institution" placeholder="اسم المدرسة أو الجامعة">
+
+      <label>
+        سنة التخرج
+      </label>
+
+      <input type="number" id="graduation_year" placeholder="مثال: 2026" min="1950" max="2100">
+
+      <div class="row">
+
+        <div>
+          <label>
+            المعدل
+          </label>
+          <input type="text" id="grade" placeholder="مثال: 3.50 من 4">
+        </div>
+
+        <div>
+          <label>
+            النسبة المئوية
+          </label>
+          <input type="number" id="percentage" placeholder="مثال: 85" min="0" max="100">
+        </div>
+
+      </div>
+
+      <label>
+        ملاحظات إضافية
+      </label>
+
+      <textarea id="notes" placeholder="اكتب أي معلومات إضافية ترغب في إضافتها..."></textarea>
+
+      <div class="buttons">
+        <button class="prev-btn" onclick="prevStep()">→ السابق</button>
+        <button class="next-btn" onclick="nextStep()">التالي ←</button>
+      </div>
+
     </div>
 
-  </div>
 
+    <!-- ========================= -->
+    <!-- الخطوة 4 -->
+    <!-- ========================= -->
 
-  <!-- ========================= -->
-  <!-- الخطوة 6 -->
-  <!-- ========================= -->
+    <div class="form-step" id="formStep4">
 
-  <div class="page" id="page6">
+      <h2>المستندات</h2>
 
-    <h2>6️⃣ مراجعة الطلب</h2>
+      <div class="notice">
+        اختر المستندات المطلوبة من جهازك. سيتم تجهيز هذه الملفات للمرحلة التالية من ربط التخزين.
+      </div>
 
-    <div class="note">
-      راجع جميع البيانات قبل إرسال الطلب.
-      إذا وجدت أي خطأ يمكنك الضغط على «السابق» والعودة لتعديله.
+      <div class="file-box">
+        <label>الشهادة / المؤهل الدراسي</label>
+        <input type="file" id="certificate" accept=".pdf,.jpg,.jpeg,.png">
+      </div>
+
+      <div class="file-box">
+        <label>جواز السفر أو الهوية</label>
+        <input type="file" id="passport" accept=".pdf,.jpg,.jpeg,.png">
+      </div>
+
+      <div class="file-box">
+        <label>الصورة الشخصية</label>
+        <input type="file" id="photo" accept=".jpg,.jpeg,.png">
+      </div>
+
+      <div class="file-box">
+        <label>مستند إضافي</label>
+        <input type="file" id="extra_document" accept=".pdf,.jpg,.jpeg,.png">
+      </div>
+
+      <div class="buttons">
+        <button class="prev-btn" onclick="prevStep()">→ السابق</button>
+        <button class="next-btn" onclick="nextStep()">التالي ←</button>
+      </div>
+
     </div>
 
-    <div class="review" id="review"></div>
 
+    <!-- ========================= -->
+    <!-- الخطوة 5 -->
+    <!-- ========================= -->
 
-    <div class="buttons">
-      <button class="back" onclick="prevStep()">← السابق</button>
-      <button class="submit" onclick="submitApplication()">
-        إرسال الطلب ✓
-      </button>
+    <div class="form-step" id="formStep5">
+
+      <h2>الخصوصية والموافقة</h2>
+
+      <div class="privacy">
+        <strong>تنبيه:</strong><br>
+        أقر بأن المعلومات التي أدخلتها صحيحة، وأوافق على استخدام البيانات
+        التي أرسلتها لغرض التقديم على المنح والقبول الجامعي ومعالجة طلبي.
+      </div>
+
+      <label class="check-row">
+        <input type="checkbox" id="agree_data">
+        <span>أوافق على معالجة بياناتي لغرض التقديم والمتابعة.</span>
+      </label>
+
+      <label class="check-row">
+        <input type="checkbox" id="agree_correct">
+        <span>أقر بأن جميع المعلومات التي أدخلتها صحيحة.</span>
+      </label>
+
+      <div class="buttons">
+        <button class="prev-btn" onclick="prevStep()">→ السابق</button>
+        <button class="next-btn" onclick="nextStep()">مراجعة الطلب ←</button>
+      </div>
+
     </div>
 
-  </div>
+
+    <!-- ========================= -->
+    <!-- الخطوة 6 -->
+    <!-- ========================= -->
+
+    <div class="form-step" id="formStep6">
+
+      <h2>مراجعة الطلب</h2>
+
+      <div class="review-box" id="reviewBox"></div>
+
+      <div class="loading" id="loading">
+        ⏳ جارٍ إرسال الطلب، يرجى الانتظار...
+      </div>
+
+      <div class="buttons">
+        <button class="prev-btn" onclick="prevStep()">→ تعديل</button>
+        <button class="submit-btn" id="submitButton" onclick="submitApplication()">
+          إرسال الطلب ✓
+        </button>
+      </div>
+
+    </div>
 
 
-  <!-- ========================= -->
-  <!-- نجاح الإرسال -->
-  <!-- ========================= -->
+    <!-- ========================= -->
+    <!-- شاشة النجاح -->
+    <!-- ========================= -->
 
-  <div class="success" id="success">
+    <div class="form-step" id="successStep">
 
-    <div class="success-icon">✅</div>
+      <div class="success">
 
-    <h2>تم استلام طلبك بنجاح</h2>
+        <div class="success-icon">✅</div>
 
-    <p>
-      شكرًا لتقديمك عبر مكتب الوسام.
-    </p>
+        <h2>تم إرسال طلبك بنجاح</h2>
 
-    <p>
-      سيتم مراجعة البيانات والمستندات الخاصة بك.
-    </p>
+        <p>
+          شكرًا لتقديمك عن طريق مكتب الوسام للتقديم والمنح.
+        </p>
 
-    <button onclick="location.reload()">
-      تقديم طلب جديد
-    </button>
+        <div class="application-number">
+          رقم الطلب:
+          <span id="applicationNumber"></span>
+        </div>
+
+        <p>
+          يرجى الاحتفاظ برقم الطلب لمتابعة طلبك.
+        </p>
+
+      </div>
+
+    </div>
 
   </div>
 
 </div>
 
+<footer>
+  © مكتب الوسام للتقديم والمنح - جميع الحقوق محفوظة
+</footer>
+
 
 <script>
 
+  /* =====================================================
+     معلومات Supabase
+     
+     ضع رابط Supabase هنا
+     وضع مفتاح Supabase هنا
+     ===================================================== */
+
+  const SUPABASE_URL = " https://bjiasnxdqxbxobqaovgh.supabase.co/rest/v1/";
+
+  const SUPABASE_KEY = "sb_publishable_E5cMO9MoOnCt7QwUJrRcZw_WwaLK8b6";
+
+
+  /* إنشاء اتصال Supabase */
+
+  const supabaseClient =
+    window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+
+  /* =====================================================
+     متغيرات النموذج
+     ===================================================== */
+
   let currentStep = 1;
 
-
-  function showStep(step) {
-
-    document.querySelectorAll(".page").forEach(function(page) {
-      page.classList.remove("active");
-    });
-
-    document.getElementById("page" + step).classList.add("active");
+  const totalSteps = 6;
 
 
-    for (let i = 1; i <= 6; i++) {
+  /* =====================================================
+     إظهار رسالة الخطأ
+     ===================================================== */
 
-      const stepElement = document.getElementById("step" + i);
+  function showError(message) {
 
-      stepElement.classList.remove("active");
-      stepElement.classList.remove("done");
+    const errorBox = document.getElementById("errorMessage");
 
-      if (i < step) {
-        stepElement.classList.add("done");
-      }
+    errorBox.innerText = message;
 
-      if (i === step) {
-        stepElement.classList.add("active");
-      }
-    }
-
-    currentStep = step;
+    errorBox.style.display = "block";
 
     window.scrollTo({
       top: 0,
       behavior: "smooth"
     });
-
-    if (step === 6) {
-      createReview();
-    }
   }
 
 
-  function validateStep() {
+  /* إخفاء الخطأ */
 
-    if (currentStep === 1) {
+  function hideError() {
 
-      const category = document.getElementById("category").value;
-      const country = document.getElementById("country").value;
-      const major = document.getElementById("major").value;
+    const errorBox = document.getElementById("errorMessage");
 
-      if (!category || !country || !major) {
-        document.getElementById("error1").style.display = "block";
+    errorBox.style.display = "none";
+
+  }
+
+
+  /* =====================================================
+     التحقق من الخطوة الحالية
+     ===================================================== */
+
+  function validateStep(step) {
+
+    hideError();
+
+
+    if (step === 1) {
+
+      const applicationType =
+        document.getElementById("application_type").value;
+
+      const country =
+        document.getElementById("country").value;
+
+      const major =
+        document.getElementById("major").value;
+
+      if (!applicationType) {
+
+        showError("يرجى اختيار نوع التقديم.");
+
         return false;
+
       }
 
-      document.getElementById("error1").style.display = "none";
+      if (!country) {
+
+        showError("يرجى اختيار الدولة.");
+
+        return false;
+
+      }
+
+      if (!major) {
+
+        showError("يرجى اختيار التخصص.");
+
+        return false;
+
+      }
+
     }
 
 
-    if (currentStep === 2) {
+    if (step === 2) {
 
-      const fullName = document.getElementById("fullName").value.trim();
-      const phone = document.getElementById("phone").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const nationality = document.getElementById("nationality").value.trim();
-      const birthDate = document.getElementById("birthDate").value;
+      const fullName =
+        document.getElementById("full_name").value.trim();
 
-      if (
-        !fullName ||
-        !phone ||
-        !email ||
-        !nationality ||
-        !birthDate
-      ) {
-        document.getElementById("error2").style.display = "block";
+      const phone =
+        document.getElementById("phone").value.trim();
+
+      const birthDate =
+        document.getElementById("birth_date").value;
+
+      const gender =
+        document.getElementById("gender").value;
+
+      const nationality =
+        document.getElementById("nationality").value.trim();
+
+
+      if (!fullName) {
+
+        showError("يرجى كتابة الاسم الكامل.");
+
         return false;
+
       }
 
-      if (!email.includes("@")) {
-        document.getElementById("error2").style.display = "block";
+      if (!phone) {
+
+        showError("يرجى كتابة رقم الهاتف.");
+
         return false;
+
       }
 
-      document.getElementById("error2").style.display = "none";
+      if (!birthDate) {
+
+        showError("يرجى اختيار تاريخ الميلاد.");
+
+        return false;
+
+      }
+
+      if (!gender) {
+
+        showError("يرجى اختيار الجنس.");
+
+        return false;
+
+      }
+
+      if (!nationality) {
+
+        showError("يرجى كتابة الجنسية.");
+
+        return false;
+
+      }
+
     }
 
 
-    if (currentStep === 3) {
+    if (step === 3) {
 
       const qualification =
         document.getElementById("qualification").value;
 
-      const graduationYear =
-        document.getElementById("graduationYear").value;
+      if (!qualification) {
 
-      const average =
-        document.getElementById("average").value;
+        showError("يرجى اختيار آخر مؤهل دراسي.");
 
-      const averageSystem =
-        document.getElementById("averageSystem").value;
-
-
-      if (
-        !qualification ||
-        !graduationYear ||
-        !average ||
-        !averageSystem
-      ) {
-        document.getElementById("error3").style.display = "block";
         return false;
-      }
-
-
-      const avg = Number(average);
-
-      if (averageSystem === "من 100" || averageSystem === "نسبة مئوية") {
-
-        if (avg < 0 || avg > 100) {
-          document.getElementById("error3").style.display = "block";
-          return false;
-        }
 
       }
 
-
-      if (averageSystem === "من 4") {
-
-        if (avg < 0 || avg > 4) {
-          document.getElementById("error3").style.display = "block";
-          return false;
-        }
-
-      }
-
-
-      if (averageSystem === "من 5") {
-
-        if (avg < 0 || avg > 5) {
-          document.getElementById("error3").style.display = "block";
-          return false;
-        }
-
-      }
-
-
-      document.getElementById("error3").style.display = "none";
     }
 
 
-    if (currentStep === 4) {
+    if (step === 5) {
 
-      const certificate =
-        document.getElementById("certificate").files.length;
+      const agreeData =
+        document.getElementById("agree_data").checked;
 
-      const identity =
-        document.getElementById("identity").files.length;
+      const agreeCorrect =
+        document.getElementById("agree_correct").checked;
 
 
-      if (!certificate || !identity) {
+      if (!agreeData) {
 
-        document.getElementById("error4").style.display = "block";
+        showError("يجب الموافقة على معالجة البيانات.");
 
         return false;
+
       }
 
-      document.getElementById("error4").style.display = "none";
+      if (!agreeCorrect) {
+
+        showError("يجب الإقرار بصحة المعلومات.");
+
+        return false;
+
+      }
+
+    }
+
+
+    return true;
+
+  }
+
+
+  /* =====================================================
+     الانتقال للخطوة التالية
+     ===================================================== */
+
+  function nextStep() {
+
+    if (!validateStep(currentStep)) {
+
+      return;
+
     }
 
 
     if (currentStep === 5) {
 
-      const privacy =
-        document.getElementById("privacy").checked;
+      createReview();
 
-
-      if (!privacy) {
-
-        document.getElementById("error5").style.display = "block";
-
-        return false;
-      }
-
-      document.getElementById("error5").style.display = "none";
     }
 
 
-    return true;
+    if (currentStep < totalSteps) {
+
+      document
+        .getElementById("formStep" + currentStep)
+        .classList.remove("active");
+
+
+      currentStep++;
+
+
+      document
+        .getElementById("formStep" + currentStep)
+        .classList.add("active");
+
+
+      updateIndicators();
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+
+    }
+
   }
 
 
-  function nextStep() {
-
-    if (!validateStep()) {
-      return;
-    }
-
-    if (currentStep < 6) {
-      showStep(currentStep + 1);
-    }
-
-  }
-
+  /* =====================================================
+     الرجوع للخطوة السابقة
+     ===================================================== */
 
   function prevStep() {
 
     if (currentStep > 1) {
-      showStep(currentStep - 1);
+
+      document
+        .getElementById("formStep" + currentStep)
+        .classList.remove("active");
+
+
+      currentStep--;
+
+
+      document
+        .getElementById("formStep" + currentStep)
+        .classList.add("active");
+
+
+      updateIndicators();
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+
     }
 
   }
 
 
+  /* =====================================================
+     تحديث أرقام الخطوات
+     ===================================================== */
+
+  function updateIndicators() {
+
+    for (let i = 1; i <= totalSteps; i++) {
+
+      const indicator =
+        document.getElementById("stepIndicator" + i);
+
+      indicator.classList.remove("active");
+      indicator.classList.remove("done");
+
+
+      if (i < currentStep) {
+
+        indicator.classList.add("done");
+
+      }
+
+      if (i === currentStep) {
+
+        indicator.classList.add("active");
+
+      }
+
+    }
+
+  }
+
+
+  /* =====================================================
+     إنشاء صفحة المراجعة
+     ===================================================== */
+
   function createReview() {
 
-    const category =
-      document.getElementById("category").value;
+    const applicationType =
+      document.getElementById("application_type").value;
 
     const country =
       document.getElementById("country").value;
 
-    const major =
+    let major =
       document.getElementById("major").value;
 
+    const otherMajor =
+      document.getElementById("other_major").value.trim();
+
+    if (major === "تخصص آخر" && otherMajor) {
+
+      major = otherMajor;
+
+    }
+
+
     const fullName =
-      document.getElementById("fullName").value;
+      document.getElementById("full_name").value;
 
     const phone =
       document.getElementById("phone").value;
@@ -958,168 +1132,429 @@
     const email =
       document.getElementById("email").value;
 
+    const birthDate =
+      document.getElementById("birth_date").value;
+
+    const gender =
+      document.getElementById("gender").value;
+
     const nationality =
       document.getElementById("nationality").value;
-
-    const birthDate =
-      document.getElementById("birthDate").value;
 
     const qualification =
       document.getElementById("qualification").value;
 
+    const institution =
+      document.getElementById("institution").value;
+
     const graduationYear =
-      document.getElementById("graduationYear").value;
+      document.getElementById("graduation_year").value;
 
-    const average =
-      document.getElementById("average").value;
+    const grade =
+      document.getElementById("grade").value;
 
-    const averageSystem =
-      document.getElementById("averageSystem").value;
+    const percentage =
+      document.getElementById("percentage").value;
+
+    const notes =
+      document.getElementById("notes").value;
 
 
-    document.getElementById("review").innerHTML = `
+    const certificate =
+      document.getElementById("certificate").files[0];
 
-      <div class="review-row">
+    const passport =
+      document.getElementById("passport").files[0];
+
+    const photo =
+      document.getElementById("photo").files[0];
+
+    const extra =
+      document.getElementById("extra_document").files[0];
+
+
+    let html = "";
+
+
+    html += `
+      <div class="review-item">
         <strong>نوع التقديم:</strong>
-        ${category}
+        ${escapeHtml(applicationType)}
       </div>
-
-      <div class="review-row">
-        <strong>الدولة:</strong>
-        ${country}
-      </div>
-
-      <div class="review-row">
-        <strong>التخصص:</strong>
-        ${major}
-      </div>
-
-      <div class="review-row">
-        <strong>الاسم الكامل:</strong>
-        ${fullName}
-      </div>
-
-      <div class="review-row">
-        <strong>رقم الهاتف:</strong>
-        ${phone}
-      </div>
-
-      <div class="review-row">
-        <strong>البريد الإلكتروني:</strong>
-        ${email}
-      </div>
-
-      <div class="review-row">
-        <strong>الجنسية:</strong>
-        ${nationality}
-      </div>
-
-      <div class="review-row">
-        <strong>تاريخ الميلاد:</strong>
-        ${birthDate}
-      </div>
-
-      <div class="review-row">
-        <strong>المؤهل:</strong>
-        ${qualification}
-      </div>
-
-      <div class="review-row">
-        <strong>سنة التخرج:</strong>
-        ${graduationYear}
-      </div>
-
-      <div class="review-row">
-        <strong>المعدل:</strong>
-        ${average} (${averageSystem})
-      </div>
-
-      <div class="review-row">
-        <strong>المستندات:</strong>
-        تم إرفاق المستندات المطلوبة ✓
-      </div>
-
-      <div class="review-row">
-        <strong>الخصوصية:</strong>
-        تمت الموافقة ✓
-      </div>
-
     `;
+
+
+    html += `
+      <div class="review-item">
+        <strong>الدولة:</strong>
+        ${escapeHtml(country)}
+      </div>
+    `;
+
+
+    html += `
+      <div class="review-item">
+        <strong>التخصص:</strong>
+        ${escapeHtml(major)}
+      </div>
+    `;
+
+
+    html += `
+      <div class="review-item">
+        <strong>الاسم الكامل:</strong>
+        ${escapeHtml(fullName)}
+      </div>
+    `;
+
+
+    html += `
+      <div class="review-item">
+        <strong>رقم الهاتف:</strong>
+        ${escapeHtml(phone)}
+      </div>
+    `;
+
+
+    html += `
+      <div class="review-item">
+        <strong>البريد الإلكتروني:</strong>
+        ${escapeHtml(email || "غير مضاف")}
+      </div>
+    `;
+
+
+    html += `
+      <div class="review-item">
+        <strong>تاريخ الميلاد:</strong>
+        ${escapeHtml(birthDate)}
+      </div>
+    `;
+
+
+    html += `
+      <div class="review-item">
+        <strong>الجنس:</strong>
+        ${escapeHtml(gender)}
+      </div>
+    `;
+
+
+    html += `
+      <div class="review-item">
+        <strong>الجنسية:</strong>
+        ${escapeHtml(nationality)}
+      </div>
+    `;
+
+
+    html += `
+      <div class="review-item">
+        <strong>المؤهل:</strong>
+        ${escapeHtml(qualification)}
+      </div>
+    `;
+
+
+    html += `
+      <div class="review-item">
+        <strong>المؤسسة التعليمية:</strong>
+        ${escapeHtml(institution || "غير مضاف")}
+      </div>
+    `;
+
+
+    html += `
+      <div class="review-item">
+        <strong>سنة التخرج:</strong>
+        ${escapeHtml(graduationYear || "غير مضافة")}
+      </div>
+    `;
+
+
+    html += `
+      <div class="review-item">
+        <strong>المعدل:</strong>
+        ${escapeHtml(grade || "غير مضاف")}
+      </div>
+    `;
+
+
+    html += `
+      <div class="review-item">
+        <strong>النسبة:</strong>
+        ${escapeHtml(percentage ? percentage + "%" : "غير مضافة")}
+      </div>
+    `;
+
+
+    html += `
+      <div class="review-item">
+        <strong>الشهادة:</strong>
+        ${certificate ? escapeHtml(certificate.name) : "لم يتم اختيار ملف"}
+      </div>
+    `;
+
+
+    html += `
+      <div class="review-item">
+        <strong>جواز السفر / الهوية:</strong>
+        ${passport ? escapeHtml(passport.name) : "لم يتم اختيار ملف"}
+      </div>
+    `;
+
+
+    html += `
+      <div class="review-item">
+        <strong>الصورة الشخصية:</strong>
+        ${photo ? escapeHtml(photo.name) : "لم يتم اختيار ملف"}
+      </div>
+    `;
+
+
+    html += `
+      <div class="review-item">
+        <strong>مستند إضافي:</strong>
+        ${extra ? escapeHtml(extra.name) : "لم يتم اختيار ملف"}
+      </div>
+    `;
+
+
+    if (notes) {
+
+      html += `
+        <div class="review-item">
+          <strong>ملاحظات:</strong>
+          ${escapeHtml(notes)}
+        </div>
+      `;
+
+    }
+
+
+    document.getElementById("reviewBox").innerHTML = html;
+
   }
 
 
-  function submitApplication() {
+  /* =====================================================
+     حماية عرض النصوص
+     ===================================================== */
 
-    const application = {
+  function escapeHtml(text) {
 
-      category:
-        document.getElementById("category").value,
-
-      country:
-        document.getElementById("country").value,
-
-      major:
-        document.getElementById("major").value,
-
-      fullName:
-        document.getElementById("fullName").value,
-
-      phone:
-        document.getElementById("phone").value,
-
-      email:
-        document.getElementById("email").value,
-
-      nationality:
-        document.getElementById("nationality").value,
-
-      birthDate:
-        document.getElementById("birthDate").value,
-
-      qualification:
-        document.getElementById("qualification").value,
-
-      graduationYear:
-        document.getElementById("graduationYear").value,
-
-      average:
-        document.getElementById("average").value,
-
-      averageSystem:
-        document.getElementById("averageSystem").value,
-
-      submittedAt:
-        new Date().toLocaleString("ar")
-
-    };
-
-
-    /*
-      حفظ مؤقت داخل المتصفح.
-      لاحقًا سنربطه بقاعدة البيانات ولوحة الإدارة.
-    */
-
-    localStorage.setItem(
-      "lastApplication",
-      JSON.stringify(application)
-    );
-
-
-    document.querySelectorAll(".page").forEach(function(page) {
-      page.style.display = "none";
-    });
-
-    document.querySelector(".steps").style.display = "none";
-    document.querySelector(".note").style.display = "none";
-
-    document.getElementById("success").style.display = "block";
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
+    return String(text)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
 
   }
+
+
+  /* =====================================================
+     إرسال الطلب إلى Supabase
+     ===================================================== */
+
+  async function submitApplication() {
+
+    hideError();
+
+
+    if (!validateStep(5)) {
+
+      return;
+
+    }
+
+
+    const submitButton =
+      document.getElementById("submitButton");
+
+    const loading =
+      document.getElementById("loading");
+
+
+    submitButton.disabled = true;
+
+    loading.style.display = "block";
+
+
+    try {
+
+      let major =
+        document.getElementById("major").value;
+
+      const otherMajor =
+        document.getElementById("other_major").value.trim();
+
+
+      if (major === "تخصص آخر" && otherMajor) {
+
+        major = otherMajor;
+
+      }
+
+
+      const applicationData = {
+
+        full_name:
+          document.getElementById("full_name").value.trim(),
+
+        phone:
+          document.getElementById("phone").value.trim(),
+
+        email:
+          document.getElementById("email").value.trim(),
+
+        application_type:
+          document.getElementById("application_type").value,
+
+        country:
+          document.getElementById("country").value,
+
+        major:
+          major,
+
+        birth_date:
+          document.getElementById("birth_date").value,
+
+        gender:
+          document.getElementById("gender").value,
+
+        nationality:
+          document.getElementById("nationality").value.trim(),
+
+        qualification:
+          document.getElementById("qualification").value,
+
+        grade:
+          document.getElementById("grade").value.trim(),
+
+        percentage:
+          document.getElementById("percentage").value,
+
+        status:
+          "جديد",
+
+        notes:
+          document.getElementById("notes").value.trim()
+
+      };
+
+
+      /* إرسال البيانات إلى جدول applications */
+
+      const { data, error } =
+        await supabaseClient
+          .from("applications")
+          .insert([applicationData])
+          .select()
+          .single();
+
+
+      if (error) {
+
+        console.error(error);
+
+        throw error;
+
+      }
+
+
+      /* حفظ رقم الطلب مؤقتًا */
+
+      localStorage.setItem(
+        "lastApplicationId",
+        data.id
+      );
+
+
+      /* إخفاء النموذج */
+
+      document
+        .getElementById("formStep" + currentStep)
+        .classList.remove("active");
+
+
+      /* إظهار النجاح */
+
+      document
+        .getElementById("successStep")
+        .classList.add("active");
+
+
+      document
+        .getElementById("applicationNumber")
+        .innerText = data.id;
+
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+
+
+    } catch (error) {
+
+      console.error("Supabase Error:", error);
+
+      let message =
+        "حدث خطأ أثناء إرسال الطلب.";
+
+
+      if (error && error.message) {
+
+        message +=
+          "\n\nتفاصيل الخطأ:\n" +
+          error.message;
+
+      }
+
+
+      showError(message);
+
+      submitButton.disabled = false;
+
+    }
+
+
+    loading.style.display = "none";
+
+  }
+
+
+  /* =====================================================
+     إظهار التخصص الآخر
+     ===================================================== */
+
+  document
+    .getElementById("major")
+    .addEventListener("change", function () {
+
+      const otherMajor =
+        document.getElementById("other_major");
+
+      if (this.value === "تخصص آخر") {
+
+        otherMajor.style.display = "block";
+
+      } else {
+
+        otherMajor.style.display = "none";
+
+        otherMajor.value = "";
+
+      }
+
+    });
+
+
+  /* إخفاء خانة التخصص الآخر في البداية */
+
+  document.getElementById("other_major").style.display = "none";
+
 
 </script>
 
