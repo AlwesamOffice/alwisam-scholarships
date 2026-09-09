@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>مكتب الوسام - التقديم</title>
+  <title>التقديم - مكتب الوسام</title>
 
   <style>
     body {
@@ -27,19 +27,13 @@
       color: #1d4f91;
     }
 
-    h2 {
-      margin-top: 30px;
-      color: #333;
-    }
-
     label {
       display: block;
-      margin-top: 15px;
+      margin-top: 18px;
       font-weight: bold;
     }
 
-    select,
-    input {
+    select, input {
       width: 100%;
       padding: 12px;
       margin-top: 7px;
@@ -57,10 +51,9 @@
       border: none;
       border-radius: 8px;
       font-size: 17px;
-      cursor: pointer;
     }
 
-    .logout {
+    .back {
       background: #777;
     }
   </style>
@@ -77,69 +70,68 @@
   <label>نوع التقديم</label>
   <select id="category">
     <option value="">اختر نوع التقديم</option>
-    <option>المنح الجامعية</option>
-    <option>الجامعات الحكومية</option>
-    <option>الجامعات الخاصة</option>
+    <option value="المنح الجامعية">المنح الجامعية</option>
+    <option value="الجامعات الحكومية">الجامعات الحكومية</option>
+    <option value="الجامعات الخاصة">الجامعات الخاصة</option>
   </select>
 
   <label>الدولة</label>
   <select id="country">
     <option value="">اختر الدولة</option>
-    <option>السعودية</option>
-    <option>مصر</option>
-    <option>الصين</option>
-    <option>تركيا</option>
+    <option value="السعودية">السعودية</option>
+    <option value="مصر">مصر</option>
+    <option value="الصين">الصين</option>
+    <option value="تركيا">تركيا</option>
   </select>
 
   <label>التخصص</label>
   <select id="major">
     <option value="">اختر التخصص</option>
-    <option>جميع التخصصات</option>
+    <option value="جميع التخصصات">جميع التخصصات</option>
   </select>
 
   <label>الاسم الكامل</label>
-  <input type="text" id="name" placeholder="اكتب الاسم الكامل">
+  <input type="text" id="name" required>
 
   <label>رقم الهاتف</label>
-  <input type="tel" id="phone" placeholder="اكتب رقم الهاتف">
+  <input type="tel" id="phone" required>
 
   <label>الجنسية</label>
-  <input type="text" id="nationality" placeholder="اكتب الجنسية">
+  <input type="text" id="nationality" required>
 
   <button onclick="nextStep()">التالي ←</button>
 
-  <button class="logout" onclick="logout()">تسجيل الخروج</button>
+  <button class="back" onclick="location.href='index.html'">
+    الصفحة الرئيسية
+  </button>
 
 </div>
 
 <script>
 function nextStep() {
+
   const category = document.getElementById("category").value;
   const country = document.getElementById("country").value;
   const major = document.getElementById("major").value;
-  const name = document.getElementById("name").value;
-  const phone = document.getElementById("phone").value;
-  const nationality = document.getElementById("nationality").value;
+  const name = document.getElementById("name").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const nationality = document.getElementById("nationality").value.trim();
 
   if (!category || !country || !major || !name || !phone || !nationality) {
-    alert("يرجى إكمال جميع البيانات");
+    alert("❌ يرجى إكمال جميع البيانات");
     return;
   }
 
   localStorage.setItem("applicationData", JSON.stringify({
-    category,
-    country,
-    major,
-    name,
-    phone,
-    nationality
+    category: category,
+    country: country,
+    major: major,
+    name: name,
+    phone: phone,
+    nationality: nationality
   }));
 
   window.location.href = "documents.html";
-}
-
-function logout() {
-  window.location.href = "login.html";
 }
 </script>
 
