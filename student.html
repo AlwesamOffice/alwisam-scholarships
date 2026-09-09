@@ -14,7 +14,7 @@
     }
 
     .box {
-      max-width: 600px;
+      max-width: 650px;
       margin: 30px auto;
       background: white;
       padding: 25px;
@@ -27,19 +27,27 @@
       color: #1d4f91;
     }
 
+    h2 {
+      color: #333;
+      margin-top: 25px;
+    }
+
     label {
       display: block;
       margin-top: 18px;
       font-weight: bold;
     }
 
-    select, input {
+    select,
+    input {
       width: 100%;
-      padding: 12px;
+      padding: 13px;
       margin-top: 7px;
       border: 1px solid #ccc;
       border-radius: 8px;
       box-sizing: border-box;
+      font-size: 15px;
+      background: white;
     }
 
     button {
@@ -51,10 +59,19 @@
       border: none;
       border-radius: 8px;
       font-size: 17px;
+      cursor: pointer;
     }
 
     .back {
       background: #777;
+    }
+
+    .note {
+      background: #eef4fb;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 15px;
+      line-height: 1.8;
     }
   </style>
 </head>
@@ -67,7 +84,12 @@
 
   <h2>استمارة التقديم</h2>
 
+  <div class="note">
+    يرجى اختيار نوع التقديم والدولة والتخصص، ثم إدخال بياناتك الشخصية.
+  </div>
+
   <label>نوع التقديم</label>
+
   <select id="category">
     <option value="">اختر نوع التقديم</option>
     <option value="المنح الجامعية">المنح الجامعية</option>
@@ -75,7 +97,9 @@
     <option value="الجامعات الخاصة">الجامعات الخاصة</option>
   </select>
 
+
   <label>الدولة</label>
+
   <select id="country">
     <option value="">اختر الدولة</option>
     <option value="السعودية">السعودية</option>
@@ -84,56 +108,93 @@
     <option value="تركيا">تركيا</option>
   </select>
 
+
   <label>التخصص</label>
+
   <select id="major">
+
     <option value="">اختر التخصص</option>
-    <option value="جميع التخصصات">جميع التخصصات</option>
-  </select>
 
-  <label>الاسم الكامل</label>
-  <input type="text" id="name" required>
+    <optgroup label="الطب والصحة">
+      <option>الطب البشري</option>
+      <option>طب الأسنان</option>
+      <option>الصيدلة</option>
+      <option>التمريض</option>
+      <option>العلاج الطبيعي</option>
+      <option>العلاج الوظيفي</option>
+      <option>المختبرات الطبية</option>
+      <option>الأشعة والتصوير الطبي</option>
+      <option>التغذية العلاجية</option>
+      <option>الصحة العامة</option>
+      <option>الإسعاف والطوارئ</option>
+      <option>البصريات</option>
+      <option>السمعيات</option>
+      <option>العلوم الطبية التطبيقية</option>
+    </optgroup>
 
-  <label>رقم الهاتف</label>
-  <input type="tel" id="phone" required>
+    <optgroup label="الهندسة">
+      <option>الهندسة المدنية</option>
+      <option>الهندسة المعمارية</option>
+      <option>الهندسة الكهربائية</option>
+      <option>هندسة الإلكترونيات</option>
+      <option>هندسة الاتصالات</option>
+      <option>الهندسة الميكانيكية</option>
+      <option>الهندسة الصناعية</option>
+      <option>الهندسة الكيميائية</option>
+      <option>هندسة البترول</option>
+      <option>هندسة الطاقة</option>
+      <option>هندسة الطيران</option>
+      <option>هندسة السيارات</option>
+      <option>هندسة المواد</option>
+      <option>الهندسة البيئية</option>
+      <option>هندسة التعدين</option>
+      <option>هندسة الروبوتات</option>
+    </optgroup>
 
-  <label>الجنسية</label>
-  <input type="text" id="nationality" required>
+    <optgroup label="الحاسب وتقنية المعلومات">
+      <option>علوم الحاسوب</option>
+      <option>تقنية المعلومات</option>
+      <option>هندسة البرمجيات</option>
+      <option>نظم المعلومات</option>
+      <option>نظم المعلومات الإدارية</option>
+      <option>الذكاء الاصطناعي</option>
+      <option>علم البيانات</option>
+      <option>الأمن السيبراني</option>
+      <option>الشبكات</option>
+      <option>تطوير البرمجيات</option>
+      <option>هندسة الحاسوب</option>
+      <option>الحوسبة السحابية</option>
+    </optgroup>
 
-  <button onclick="nextStep()">التالي ←</button>
+    <optgroup label="إدارة واقتصاد">
+      <option>إدارة الأعمال</option>
+      <option>المحاسبة</option>
+      <option>الاقتصاد</option>
+      <option>التمويل</option>
+      <option>التسويق</option>
+      <option>إدارة الموارد البشرية</option>
+      <option>إدارة المشاريع</option>
+      <option>التجارة الدولية</option>
+      <option>العلوم المصرفية</option>
+      <option>ريادة الأعمال</option>
+    </optgroup>
 
-  <button class="back" onclick="location.href='index.html'">
-    الصفحة الرئيسية
-  </button>
+    <optgroup label="القانون والعلوم السياسية">
+      <option>القانون</option>
+      <option>الحقوق</option>
+      <option>العلوم السياسية</option>
+      <option>العلاقات الدولية</option>
+      <option>الدراسات الدبلوماسية</option>
+    </optgroup>
 
-</div>
-
-<script>
-function nextStep() {
-
-  const category = document.getElementById("category").value;
-  const country = document.getElementById("country").value;
-  const major = document.getElementById("major").value;
-  const name = document.getElementById("name").value.trim();
-  const phone = document.getElementById("phone").value.trim();
-  const nationality = document.getElementById("nationality").value.trim();
-
-  if (!category || !country || !major || !name || !phone || !nationality) {
-    alert("❌ يرجى إكمال جميع البيانات");
-    return;
-  }
-
-  localStorage.setItem("applicationData", JSON.stringify({
-    category: category,
-    country: country,
-    major: major,
-    name: name,
-    phone: phone,
-    nationality: nationality
-  }));
-
-  window.location.href = "documents.html";
-}
-</script>
-
-</body>
-</html>
+    <optgroup label="التربية والعلوم الإنسانية">
+      <option>التربية</option>
+      <option>اللغة العربية</option>
+      <option>اللغة الإنجليزية</option>
+      <option>الترجمة</option>
+      <option>علم النفس</option>
+      <option>علم الاجتماع</option>
+      <option>التاريخ</option>
+      <option>الجغرافيا</option>
+      <option>الفلسفة</option>
+      <option>ال
