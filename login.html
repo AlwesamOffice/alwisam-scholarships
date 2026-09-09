@@ -139,12 +139,13 @@
           password: password
         });
 
-      if (error) {
+    if (error) {
 
-        message.textContent = "❌ البريد الإلكتروني أو كلمة المرور غير صحيحة";
+  message.textContent = "❌ " + error.message;
 
-        return;
-      }
+  return;
+}
+      
 
       message.textContent = "✅ تم تسجيل الدخول بنجاح";
 
