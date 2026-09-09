@@ -3,19 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>رفع المستندات - مكتب الوسام</title>
+  <title>المستندات المطلوبة - مكتب الوسام</title>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      overflow-x: hidden;
+    }
+
     body {
       font-family: Arial, sans-serif;
       background: #f4f6f8;
-      margin: 0;
-      padding: 20px;
+      padding: 15px;
     }
 
     .box {
-      max-width: 600px;
-      margin: 30px auto;
+      width: 100%;
+      max-width: 650px;
+      margin: 25px auto;
       background: white;
       padding: 25px;
       border-radius: 15px;
@@ -25,18 +36,29 @@
     h1 {
       text-align: center;
       color: #1d4f91;
+      margin-bottom: 10px;
     }
 
-    p {
-      color: #555;
+    .step {
+      text-align: center;
+      color: #777;
+      margin-bottom: 25px;
+    }
+
+    .note {
+      background: #eef4fb;
+      padding: 14px;
+      border-radius: 8px;
       line-height: 1.8;
+      margin-bottom: 20px;
     }
 
     .document {
-      margin-top: 20px;
-      padding: 15px;
+      margin-top: 18px;
+      padding: 16px;
       border: 1px solid #ddd;
       border-radius: 10px;
+      background: #fafafa;
     }
 
     label {
@@ -45,24 +67,45 @@
       margin-bottom: 10px;
     }
 
+    .required {
+      color: red;
+    }
+
     input[type="file"] {
       width: 100%;
+      max-width: 100%;
+      padding: 8px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 25px;
     }
 
     button {
-      width: 100%;
+      flex: 1;
       padding: 14px;
-      margin-top: 25px;
-      background: #1d4f91;
-      color: white;
       border: none;
       border-radius: 8px;
+      background: #1d4f91;
+      color: white;
       font-size: 17px;
       cursor: pointer;
     }
 
-    .back {
+    .previous {
       background: #777;
+    }
+
+    @media (max-width: 500px) {
+      .box {
+        padding: 18px;
+      }
+
+      .buttons {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
@@ -71,29 +114,152 @@
 
 <div class="box">
 
-  <h1>📄 المستندات المطلوبة</h1>
+  <h1>📄 مكتب الوسام</h1>
 
-  <p>
-    يرجى رفع المستندات المطلوبة للتقديم.
+  <div class="step">
+    الخطوة الثانية: رفع المستندات
+  </div>
+
+  <div class="note">
+    يرجى رفع المستندات المطلوبة.
     <br>
-    الملفات المطلوبة بعلامة (*) إلزامية.
-  </p>
-
-  <div class="document">
-    <label>📘 الجواز *</label>
-    <input type="file" id="passport" accept=".pdf,.jpg,.jpeg,.png">
+    المستندات التي بجانبها <span class="required">*</span> إلزامية.
   </div>
 
+
   <div class="document">
-    <label>🎓 شهادة الثانوية *</label>
-    <input type="file" id="certificate" accept=".pdf,.jpg,.jpeg,.png">
+    <label>
+      📘 الجواز
+      <span class="required">*</span>
+    </label>
+    <input
+      type="file"
+      id="passport"
+      accept=".pdf,.jpg,.jpeg,.png">
   </div>
+
+
+  <div class="document">
+    <label>
+      🎓 شهادة الثانوية
+      <span class="required">*</span>
+    </label>
+    <input
+      type="file"
+      id="certificate"
+      accept=".pdf,.jpg,.jpeg,.png">
+  </div>
+
 
   <div class="document">
     <label>📜 شهادة الميلاد</label>
-    <input type="file" id="birth" accept=".pdf,.jpg,.jpeg,.png">
+    <input
+      type="file"
+      id="birth"
+      accept=".pdf,.jpg,.jpeg,.png">
   </div>
+
 
   <div class="document">
     <label>👤 الصورة الشخصية</label>
-    <input type="file" id="photo" accept=".jpg,.jpeg
+    <input
+      type="file"
+      id="photo"
+      accept=".jpg,.jpeg,.png">
+  </div>
+
+
+  <div class="document">
+    <label>📝 خطاب الدافع</label>
+    <input
+      type="file"
+      id="motivation"
+      accept=".pdf,.doc,.docx">
+  </div>
+
+
+  <div class="document">
+    <label>📄 خطاب التوصية</label>
+    <input
+      type="file"
+      id="recommendation"
+      accept=".pdf,.doc,.docx">
+  </div>
+
+
+  <div class="buttons">
+
+    <button
+      class="previous"
+      onclick="location.href='student.html'">
+      → السابق
+    </button>
+
+    <button onclick="nextStep()">
+      التالي ←
+    </button>
+
+  </div>
+
+</div>
+
+
+<script>
+
+function nextStep() {
+
+  const passport =
+    document.getElementById("passport").files[0];
+
+  const certificate =
+    document.getElementById("certificate").files[0];
+
+
+  if (!passport) {
+    alert("❌ يجب رفع الجواز");
+    return;
+  }
+
+
+  if (!certificate) {
+    alert("❌ يجب رفع شهادة الثانوية");
+    return;
+  }
+
+
+  /*
+    نحفظ أسماء الملفات مؤقتًا
+    إلى أن نربط الصفحة بـ Supabase.
+  */
+
+  const documents = {
+    passport: passport.name,
+    certificate: certificate.name,
+    birth: document.getElementById("birth").files[0]
+      ? document.getElementById("birth").files[0].name
+      : "",
+    photo: document.getElementById("photo").files[0]
+      ? document.getElementById("photo").files[0].name
+      : "",
+    motivation: document.getElementById("motivation").files[0]
+      ? document.getElementById("motivation").files[0].name
+      : "",
+    recommendation: document.getElementById("recommendation").files[0]
+      ? document.getElementById("recommendation").files[0].name
+      : ""
+  };
+
+
+  localStorage.setItem(
+    "applicationDocuments",
+    JSON.stringify(documents)
+  );
+
+
+  window.location.href = "review.html";
+}
+
+</script>
+
+</body>
+</html>
