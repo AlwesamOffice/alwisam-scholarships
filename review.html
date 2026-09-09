@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مراجعة الطلب - مكتب الوسام</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      font-family: Arial, Tahoma, sans-serif;
+      background: #f4f7fb;
+      color: #222;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 700px;
+      margin: 30px auto;
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 0;
+      color: #123b63;
+      font-size: 26px;
+    }
+
+    .step {
+      text-align: center;
+      color: #777;
+      margin-bottom: 25px;
+      font-size: 15px;
+    }
+
+    .section {
+      border: 1px solid #e1e6eb;
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+
+    .section h2 {
+      margin-top: 0;
+      color: #123b63;
+      font-size: 19px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      padding: 9px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .row:last-child {
+      border-bottom: none;
+    }
+
+    .label {
+      font-weight: bold;
+      color: #555;
+    }
+
+    .value {
+      text-align: left;
+      word-break: break-word;
+    }
+
+    .file {
+      background: #f7f9fb;
+      border-radius: 8px;
+      padding: 10px;
+      margin: 8px 0;
+      word-break: break-word;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 25px;
+    }
+
+    button {
+      flex: 1;
+      border: none;
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .back {
+      background: #e5e7eb;
+      color: #222;
+    }
+
+    .submit {
+      background: #123b63;
+      color: white;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 20px;
+      color: #777;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        margin: 10px auto;
+        padding: 10px;
+      }
+
+      .card {
+        padding: 18px;
+      }
+
+      h1 {
+        font-size: 22px;
+      }
+
+      .row {
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .value {
+        text-align: right;
+      }
+
+      .buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <div class="card">
+
+      <h1>مراجعة طلب التقديم</h1>
+
+      <div class="step">
+        الخطوة الثالثة: مراجعة البيانات قبل الإرسال
+      </div>
+
+      <div id="content"></div>
+
+      <div class="buttons">
+        <button class="back" onclick="goBack()">
+          → السابق
+        </button>
+
+        <button class="submit" id="submitBtn" onclick="submitApplication()">
+          إرسال الطلب ✓
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+
+    const applicationData =
+      JSON.parse(localStorage.getItem("applicationData")) || {};
+
+    const applicationDocuments =
+      JSON.parse(localStorage.getItem("applicationDocuments")) || {};
+
+    const content = document.getElementById("content");
+
+    function row(label, value) {
+      return `
+        <div class="row">
+          <div class="label">${label}</div>
+          <div class="value">${value || "غير موجود"}</div>
+        </div>
+      `;
+    }
+
+    function showData() {
+
+      if (!applicationData || Object.keys(applicationData).length === 0) {
+        content.innerHTML = `
+          <div class="empty">
+            لا توجد بيانات محفوظة للطلب.
+          </div>
+        `;
+        return;
+      }
+
+      content.innerHTML = `
+
+        <div class="section">
+          <h2>📚 بيانات التقديم</h2>
+
+          ${row("الفئة", applicationData.category)}
+          ${row("الدولة", applicationData.country)}
+          ${row("التخصص", applicationData.major)}
+        </div>
+
+
+        <div class="section">
+          <h2>👤 البيانات الشخصية</h2>
+
+          ${row("الاسم الكامل", applicationData.name)}
+          ${row("رقم الهاتف", applicationData.phone)}
+          ${row("الجنسية", applicationData.nationality)}
+        </div>
+
+
+        <div class="section">
+          <h2>📄 المستندات</h2>
+
+          <div class="file">
+            🛂 الجواز:
+            <strong>
+              ${applicationDocuments.passport || "لم يتم اختيار الملف"}
+            </strong>
+          </div>
+
+          <div class="file">
+            🎓 شهادة الثانوية:
+            <strong>
+              ${applicationDocuments.certificate || "لم يتم اختيار الملف"}
+            </strong>
+          </div>
+
+          <div class="file">
+            🎂 شهادة الميلاد:
+            <strong>
+              ${applicationDocuments.birth || "لم يتم اختيار الملف"}
+            </strong>
+          </div>
+
+          <div class="file">
+            🖼️ الصورة الشخصية:
+            <strong>
+              ${applicationDocuments.photo || "لم يتم اختيار الملف"}
+            </strong>
+          </div>
+
+          <div class="file">
+            📝 خطاب الدافع:
+            <strong>
+              ${applicationDocuments.motivation || "لم يتم اختيار الملف"}
+            </strong>
+          </div>
+
+          <div class="file">
+            📑 خطاب التوصية:
+            <strong>
+              ${applicationDocuments.recommendation || "لم يتم اختيار الملف"}
+            </strong>
+          </div>
+
+        </div>
+
+      `;
+    }
+
+
+    function goBack() {
+      window.location.href = "documents.html?v=999";
+    }
+
+
+    function submitApplication() {
+
+      const passport = applicationDocuments.passport;
+      const certificate = applicationDocuments.certificate;
+
+      if (!passport || !certificate) {
+        alert("يجب إرفاق الجواز وشهادة الثانوية قبل إرسال الطلب.");
+        return;
+      }
+
+      const button = document.getElementById("submitBtn");
+
+      button.disabled = true;
+      button.textContent = "جاري إرسال الطلب...";
+
+      // رقم طلب مؤقت إلى أن نربط الإرسال بقاعدة بيانات Supabase
+      const applicationNumber =
+        "ALW-" +
+        Date.now().toString().slice(-8);
+
+      localStorage.setItem(
+        "applicationNumber",
+        applicationNumber
+      );
+
+      localStorage.setItem(
+        "applicationStatus",
+        "تم استلام الطلب"
+      );
+
+      setTimeout(function() {
+        window.location.href =
+          "success.html?v=999";
+      }, 800);
+    }
+
+
+    showData();
+
+  </script>
+
+</body>
+</html>
