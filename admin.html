@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة تحكم مكتب الوسام</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, Tahoma, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #f4f6f9;
+      color: #222;
+    }
+
+    header {
+      background: #0b5d4b;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 8px #0002;
+    }
+
+    header h1 {
+      margin: 0 0 6px;
+      font-size: 25px;
+    }
+
+    header p {
+      margin: 0;
+      opacity: .9;
+    }
+
+    .container {
+      width: 95%;
+      max-width: 1200px;
+      margin: 25px auto;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px #0001;
+      text-align: center;
+    }
+
+    .card h2 {
+      margin: 0;
+      color: #0b5d4b;
+      font-size: 30px;
+    }
+
+    .card p {
+      margin: 8px 0 0;
+      color: #666;
+    }
+
+    .tools {
+      background: white;
+      padding: 18px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px #0001;
+    }
+
+    .tools input,
+    .tools select {
+      width: 100%;
+      padding: 12px;
+      margin: 5px 0;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+
+    .table-box {
+      background: white;
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px #0001;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 750px;
+    }
+
+    th,
+    td {
+      padding: 13px 10px;
+      border-bottom: 1px solid #eee;
+      text-align: right;
+    }
+
+    th {
+      background: #f0f4f3;
+      color: #0b5d4b;
+    }
+
+    .status {
+      padding: 6px 10px;
+      border-radius: 20px;
+      font-size: 13px;
+      display: inline-block;
+    }
+
+    .new {
+      background: #e3f2fd;
+      color: #1565c0;
+    }
+
+    .review {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .accepted {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .rejected {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    button {
+      border: none;
+      background: #0b5d4b;
+      color: white;
+      padding: 8px 13px;
+      border-radius: 7px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: .9;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 40px;
+      color: #777;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #0008;
+      z-index: 1000;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .modal-content {
+      background: white;
+      max-width: 800px;
+      margin: 30px auto;
+      border-radius: 15px;
+      padding: 25px;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+    }
+
+    .close {
+      background: #dc3545;
+    }
+
+    .details {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .detail {
+      background: #f7f7f7;
+      padding: 12px;
+      border-radius: 8px;
+    }
+
+    .detail strong {
+      display: block;
+      color: #0b5d4b;
+      margin-bottom: 5px;
+    }
+
+    .actions {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 800px) {
+      .cards {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .details {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 500px) {
+      .cards {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .card {
+        padding: 14px 8px;
+      }
+
+      .card h2 {
+        font-size: 24px;
+      }
+
+      .container {
+        width: 97%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>🎓 مكتب الوسام للتقديم والمنح</h1>
+  <p>لوحة تحكم الإدارة</p>
+</header>
+
+<div class="container">
+
+  <div class="cards">
+    <div class="card">
+      <h2 id="totalCount">0</h2>
+      <p>إجمالي الطلبات</p>
+    </div>
+
+    <div class="card">
+      <h2 id="newCount">0</h2>
+      <p>طلبات جديدة</p>
+    </div>
+
+    <div class="card">
+      <h2 id="reviewCount">0</h2>
+      <p>قيد المراجعة</p>
+    </div>
+
+    <div class="card">
+      <h2 id="acceptedCount">0</h2>
+      <p>مقبول</p>
+    </div>
+  </div>
+
+  <div class="tools">
+
+    <input
+      type="text"
+      id="searchInput"
+      placeholder="🔎 ابحث باسم الطالب أو رقم الهاتف..."
+    >
+
+    <select id="statusFilter">
+      <option value="">كل الحالات</option>
+      <option value="جديد">جديد</option>
+      <option value="قيد المراجعة">قيد المراجعة</option>
+      <option value="مقبول">مقبول</option>
+      <option value="مرفوض">مرفوض</option>
+    </select>
+
+    <select id="countryFilter">
+      <option value="">كل الدول</option>
+    </select>
+
+    <select id="majorFilter">
+      <option value="">كل التخصصات</option>
+    </select>
+
+  </div>
+
+  <div class="table-box">
+
+    <table>
+      <thead>
+        <tr>
+          <th>رقم الطلب</th>
+          <th>اسم الطالب</th>
+          <th>الدولة</th>
+          <th>التخصص</th>
+          <th>نوع التقديم</th>
+          <th>الحالة</th>
+          <th>التفاصيل</th>
+        </tr>
+      </thead>
+
+      <tbody id="applicationsTable"></tbody>
+    </table>
+
+    <div id="emptyMessage" class="empty">
+      لا توجد طلبات حاليًا.
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- نافذة تفاصيل الطلب -->
+
+<div class="modal" id="detailsModal">
+
+  <div class="modal-content">
+
+    <div class="modal-header">
+      <h2>تفاصيل الطلب</h2>
+      <button class="close" onclick="closeModal()">إغلاق</button>
+    </div>
+
+    <div class="details" id="detailsContainer"></div>
+
+    <div class="actions">
+
+      <button onclick="changeStatus('قيد المراجعة')">
+        قيد المراجعة
+      </button>
+
+      <button onclick="changeStatus('مقبول')">
+        قبول الطلب
+      </button>
+
+      <button onclick="changeStatus('مرفوض')">
+        رفض الطلب
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+let applications = [];
+let selectedApplication = null;
+
+
+/* قراءة الطلبات المحفوظة حاليًا */
+
+function loadApplications() {
+
+  try {
+
+    const saved = localStorage.getItem("applications");
+
+    if (saved) {
+      applications = JSON.parse(saved);
+    } else {
+
+      const oldApplication =
+        localStorage.getItem("application");
+
+      if (oldApplication) {
+        applications = [JSON.parse(oldApplication)];
+      } else {
+        applications = [];
+      }
+
+    }
+
+  } catch (error) {
+
+    console.error(error);
+    applications = [];
+
+  }
+
+  renderApplications();
+  updateFilters();
+}
+
+
+/* عرض الطلبات */
+
+function renderApplications() {
+
+  const table = document.getElementById("applicationsTable");
+  const empty = document.getElementById("emptyMessage");
+
+  const search =
+    document.getElementById("searchInput").value
+      .toLowerCase();
+
+  const status =
+    document.getElementById("statusFilter").value;
+
+  const country =
+    document.getElementById("countryFilter").value;
+
+  const major =
+    document.getElementById("majorFilter").value;
+
+
+  const filtered = applications.filter(app => {
+
+    const text =
+      JSON.stringify(app).toLowerCase();
+
+    const matchesSearch =
+      !search || text.includes(search);
+
+    const matchesStatus =
+      !status ||
+      getStatus(app) === status;
+
+    const matchesCountry =
+      !country ||
+      getValue(app, ["country", "الدولة"]) === country;
+
+    const matchesMajor =
+      !major ||
+      getValue(app, ["major", "specialty", "التخصص"]) === major;
+
+    return (
+      matchesSearch &&
+      matchesStatus &&
+      matchesCountry &&
+      matchesMajor
+    );
+
+  });
+
+
+  table.innerHTML = "";
+
+  if (filtered.length === 0) {
+
+    empty.style.display = "block";
+
+  } else {
+
+    empty.style.display = "none";
+
+    filtered.forEach((app, index) => {
+
+      const name =
+        getValue(app, [
+          "name",
+          "fullName",
+          "studentName",
+          "الاسم"
+        ]) || "غير محدد";
+
+      const country =
+        getValue(app, [
+          "country",
+          "الدولة"
+        ]) || "غير محدد";
+
+      const major =
+        getValue(app, [
+          "major",
+          "specialty",
+          "التخصص"
+        ]) || "غير محدد";
+
+      const type =
+        getValue(app, [
+          "applicationType",
+          "type",
+          "نوع التقديم"
+        ]) || "غير محدد";
+
+      const status =
+        getStatus(app);
+
+      const row = document.createElement("tr");
+
+      row.innerHTML = `
+
+        <td>${index + 1}</td>
+
+        <td>${escapeHtml(name)}</td>
+
+        <td>${escapeHtml(country)}</td>
+
+        <td>${escapeHtml(major)}</td>
+
+        <td>${escapeHtml(type)}</td>
+
+        <td>
+          <span class="status ${statusClass(status)}">
+            ${escapeHtml(status)}
+          </span>
+        </td>
+
+        <td>
+          <button onclick="openDetails(${applications.indexOf(app)})">
+            عرض
+          </button>
+        </td>
+
+      `;
+
+      table.appendChild(row);
+
+    });
+
+  }
+
+  updateCounters();
+
+}
+
+
+/* استخراج البيانات */
+
+function getValue(app, keys) {
+
+  for (const key of keys) {
+
+    if (
+      app &&
+      app[key] !== undefined &&
+      app[key] !== null &&
+      app[key] !== ""
+    ) {
+
+      return app[key];
+
+    }
+
+  }
+
+  return "";
+
+}
+
+
+/* حالة الطلب */
+
+function getStatus(app) {
+
+  return getValue(app, [
+    "status",
+    "applicationStatus",
+    "الحالة"
+  ]) || "جديد";
+
+}
+
+
+/* شكل الحالة */
+
+function statusClass(status) {
+
+  if (status === "مقبول")
+    return "accepted";
+
+  if (status === "مرفوض")
+    return "rejected";
+
+  if (status === "قيد المراجعة")
+    return "review";
+
+  return "new";
+
+}
+
+
+/* العدادات */
+
+function updateCounters() {
+
+  document.getElementById("totalCount").textContent =
+    applications.length;
+
+  document.getElementById("newCount").textContent =
+    applications.filter(a => getStatus(a) === "جديد").length;
+
+  document.getElementById("reviewCount").textContent =
+    applications.filter(a => getStatus(a) === "قيد المراجعة").length;
+
+  document.getElementById("acceptedCount").textContent =
+    applications.filter(a => getStatus(a) === "مقبول").length;
+
+}
+
+
+/* الفلاتر */
+
+function updateFilters() {
+
+  const countries = new Set();
+  const majors = new Set();
+
+  applications.forEach(app => {
+
+    const country =
+      getValue(app, ["country", "الدولة"]);
+
+    const major =
+      getValue(app, [
+        "major",
+        "specialty",
+        "التخصص"
+      ]);
+
+    if (country)
+      countries.add(country);
+
+    if (major)
+      majors.add(major);
+
+  });
+
+
+  const countrySelect =
+    document.getElementById("countryFilter");
+
+  const majorSelect =
+    document.getElementById("majorFilter");
+
+
+  countrySelect.innerHTML =
+    '<option value="">كل الدول</option>';
+
+  majorSelect.innerHTML =
+    '<option value="">كل التخصصات</option>';
+
+
+  countries.forEach(country => {
+
+    const option =
+      document.createElement("option");
+
+    option.value = country;
+    option.textContent = country;
+
+    countrySelect.appendChild(option);
+
+  });
+
+
+  majors.forEach(major => {
+
+    const option =
+      document.createElement("option");
+
+    option.value = major;
+    option.textContent = major;
+
+    majorSelect.appendChild(option);
+
+  });
+
+}
+
+
+/* فتح تفاصيل الطلب */
+
+function openDetails(index) {
+
+  selectedApplication = index;
+
+  const app = applications[index];
+
+  const container =
+    document.getElementById("detailsContainer");
+
+  container.innerHTML = "";
+
+  Object.entries(app).forEach(([key, value]) => {
+
+    if (
+      value === null ||
+      value === undefined ||
+      typeof value === "object"
+    ) {
+      return;
+    }
+
+    const div =
+      document.createElement("div");
+
+    div.className = "detail";
+
+    div.innerHTML = `
+      <strong>${escapeHtml(key)}</strong>
+      ${escapeHtml(String(value))}
+    `;
+
+    container.appendChild(div);
+
+  });
+
+
+  document.getElementById("detailsModal")
+    .style.display = "block";
+
+}
+
+
+/* إغلاق */
+
+function closeModal() {
+
+  document.getElementById("detailsModal")
+    .style.display = "none";
+
+  selectedApplication = null;
+
+}
+
+
+/* تغيير الحالة */
+
+function changeStatus(newStatus) {
+
+  if (selectedApplication === null)
+    return;
+
+  applications[selectedApplication].status =
+    newStatus;
+
+  localStorage.setItem(
+    "applications",
+    JSON.stringify(applications)
+  );
+
+  renderApplications();
+
+  closeModal();
+
+}
+
+
+/* حماية النصوص */
+
+function escapeHtml(text) {
+
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+
+/* البحث والفلترة */
+
+document
+  .getElementById("searchInput")
+  .addEventListener("input", renderApplications);
+
+document
+  .getElementById("statusFilter")
+  .addEventListener("change", renderApplications);
+
+document
+  .getElementById("countryFilter")
+  .addEventListener("change", renderApplications);
+
+document
+  .getElementById("majorFilter")
+  .addEventListener("change", renderApplications);
+
+
+/* تشغيل اللوحة */
+
+loadApplications();
+
+</script>
+
+</body>
+</html>
