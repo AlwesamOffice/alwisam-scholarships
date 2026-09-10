@@ -54,6 +54,11 @@
       cursor: pointer;
     }
 
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
     a {
       display: block;
       text-align: center;
@@ -66,6 +71,7 @@
       text-align: center;
       margin-top: 15px;
       font-weight: bold;
+      line-height: 1.7;
     }
   </style>
 </head>
@@ -91,6 +97,7 @@
         type="email"
         id="email"
         placeholder="البريد الإلكتروني"
+        autocomplete="email"
         required
       >
 
@@ -99,6 +106,7 @@
         id="password"
         placeholder="كلمة المرور"
         minlength="6"
+        autocomplete="new-password"
         required
       >
 
@@ -107,17 +115,25 @@
         id="confirmPassword"
         placeholder="تأكيد كلمة المرور"
         minlength="6"
+        autocomplete="new-password"
         required
       >
 
-      <button type="submit">إنشاء الحساب</button>
+      <button type="submit" id="registerButton">
+        إنشاء الحساب
+      </button>
 
     </form>
 
     <div id="message"></div>
 
-    <a href="login.html">لدي حساب بالفعل — تسجيل الدخول</a>
-    <a href="index.html">العودة إلى الصفحة الرئيسية</a>
+    <a href="login.html">
+      لدي حساب بالفعل — تسجيل الدخول
+    </a>
+
+    <a href="index.html">
+      العودة إلى الصفحة الرئيسية
+    </a>
 
   </div>
 
@@ -126,61 +142,175 @@
 
   <script>
 
-    const SUPABASE_URL = "https://bjiasnxdqxbxobqaovgh.supabase.co";
+    /* ===============================
+       Supabase
+       =============================== */
 
-    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_E5cMO9MoOnCt7QwUJrRcZw_WwaLK8b6";
+    const SUPABASE_URL =
+      "https://bjiasnxdqxbxobqaovgh.supabase.co";
 
-    const supabaseClient = supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_PUBLISHABLE_KEY
-    );
+    const SUPABASE_PUBLISHABLE_KEY =
+      "sb_publishable_E5cMO9MoOnCt7QwUJrRcZw_WwaLK8b6";
 
-
-    document.getElementById("registerForm").addEventListener("submit", async function(e) {
-
-      e.preventDefault();
-
-      const fullName = document.getElementById("fullName").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-      const confirmPassword = document.getElementById("confirmPassword").value;
-      const message = document.getElementById("message");
+    const supabaseClient =
+      supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+      );
 
 
-      if (password !== confirmPassword) {
-        message.textContent = "❌ كلمتا المرور غير متطابقتين";
-        return;
-      }
+    /* ===============================
+       العناصر
+       =============================== */
+
+    const form =
+      document.getElementById("registerForm");
+
+    const button =
+      document.getElementById("registerButton");
+
+    const message =
+      document.getElementById("message");
 
 
-      message.textContent = "جاري إنشاء الحساب...";
+    /* ===============================
+       إنشاء الحساب
+       =============================== */
+
+    form.addEventListener(
+      "submit",
+      async function(event) {
+
+        event.preventDefault();
+
+        const fullName =
+          document.getElementById("fullName")
+            .value.trim();
+
+        const email =
+          document.getElementById("email")
+            .value.trim();
+
+        const password =
+          document.getElementById("password")
+            .value;
+
+        const confirmPassword =
+          document.getElementById("confirmPassword")
+            .value;
 
 
-      const { data, error } = await supabaseClient.auth.signUp({
+        /* التحقق من كلمة المرور */
 
-        email: email,
+        if (password !== confirmPassword) {
 
-        password: password,
+          message.textContent =
+            "❌ كلمتا المرور غير متطابقتين";
 
-        options: {
-          data: {
-            full_name: fullName
-          }
+          message.style.color = "#b00020";
+
+          return;
         }
 
-      });
+
+        button.disabled = true;
+
+        button.textContent =
+          "جاري إنشاء الحساب...";
+
+        message.textContent = "";
 
 
-      if (error) {
-        message.textContent = "❌ " + error.message;
-        return;
+        try {
+
+          const { data, error } =
+            await supabaseClient.auth.signUp({
+
+              email: email,
+
+              password: password,
+
+              options: {
+
+                data: {
+                  full_name: fullName
+                }
+
+              }
+
+            });
+
+
+          if (error) {
+
+            console.error(
+              "Register Error:",
+              error
+            );
+
+            message.textContent =
+              "❌ " + error.message;
+
+            message.style.color =
+              "#b00020";
+
+            button.disabled = false;
+
+            button.textContent =
+              "إنشاء الحساب";
+
+            return;
+          }
+
+
+          /*
+           * تم إنشاء الحساب بنجاح.
+           *
+           * إذا كان تأكيد البريد الإلكتروني
+           * مفعلاً في Supabase، سيحتاج الطالب
+           * إلى تأكيد بريده أولًا.
+           */
+
+          message.textContent =
+            "✅ تم إنشاء الحساب بنجاح. جاري الانتقال إلى تسجيل الدخول...";
+
+          message.style.color =
+            "#16803c";
+
+
+          /*
+           * الانتقال تلقائيًا إلى تسجيل الدخول
+           */
+
+          setTimeout(function() {
+
+            window.location.href =
+              "login.html";
+
+          }, 1200);
+
+
+        } catch (error) {
+
+          console.error(
+            "Unexpected Register Error:",
+            error
+          );
+
+          message.textContent =
+            "❌ حدث خطأ أثناء إنشاء الحساب.";
+
+          message.style.color =
+            "#b00020";
+
+          button.disabled = false;
+
+          button.textContent =
+            "إنشاء الحساب";
+        }
+
       }
-
-
-      message.textContent =
-        "✅ تم إنشاء الحساب. تحقق من بريدك الإلكتروني لتأكيد الحساب.";
-
-    });
+    );
 
   </script>
 
