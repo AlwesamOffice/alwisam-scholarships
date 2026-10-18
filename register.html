@@ -3,19 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>إنشاء حساب - مكتب الوسام</title>
+  <title>إنشاء حساب - مكتب الوسام للخدمات التعليمية والمنح الدراسية</title>
 
   <style>
+    * { box-sizing: border-box; }
+
     body {
-      font-family: Arial, sans-serif;
+      font-family: Arial, Tahoma, sans-serif;
       background: #f5f7fa;
       margin: 0;
-      padding: 0;
+      padding: 20px 12px;
+      min-height: 100vh;
     }
 
     .box {
+      width: 100%;
       max-width: 420px;
-      margin: 50px auto;
+      margin: 30px auto;
       background: white;
       padding: 30px;
       border-radius: 15px;
@@ -25,32 +29,55 @@
     h1 {
       text-align: center;
       color: #123b5d;
+      font-size: 25px;
+      line-height: 1.7;
+      margin-top: 0;
     }
 
     p {
       text-align: center;
       color: #666;
+      line-height: 1.7;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 6px;
+      font-weight: bold;
+      color: #333;
     }
 
     input {
       width: 100%;
       padding: 13px;
-      margin: 8px 0;
-      box-sizing: border-box;
+      margin: 0;
       border: 1px solid #ccc;
       border-radius: 8px;
       font-size: 16px;
+      background: white;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #2563eb;
+    }
+
+    #email, #password, #confirmPassword {
+      direction: ltr;
+      text-align: left;
     }
 
     button {
       width: 100%;
       padding: 14px;
-      margin-top: 12px;
+      margin-top: 22px;
       border: none;
       border-radius: 8px;
       background: #123b5d;
       color: white;
       font-size: 17px;
+      font-weight: bold;
       cursor: pointer;
     }
 
@@ -65,13 +92,41 @@
       margin-top: 15px;
       color: #123b5d;
       text-decoration: none;
+      line-height: 1.8;
     }
 
     #message {
+      display: none;
       text-align: center;
-      margin-top: 15px;
+      margin-top: 18px;
+      padding: 12px;
+      border-radius: 8px;
       font-weight: bold;
-      line-height: 1.7;
+      line-height: 1.8;
+      overflow-wrap: anywhere;
+    }
+
+    #message.error {
+      display: block;
+      color: #991b1b;
+      background: #fee2e2;
+      border: 1px solid #fecaca;
+    }
+
+    #message.success {
+      display: block;
+      color: #166534;
+      background: #dcfce7;
+      border: 1px solid #bbf7d0;
+    }
+
+    @media (max-width: 480px) {
+      .box {
+        padding: 23px 18px;
+        margin: 15px auto;
+      }
+
+      h1 { font-size: 22px; }
     }
   </style>
 </head>
@@ -80,40 +135,45 @@
 
   <div class="box">
 
-    <h1>🎓 مكتب الوسام</h1>
+    <h1>🎓 مكتب الوسام للخدمات التعليمية والمنح الدراسية</h1>
 
     <p>إنشاء حساب طالب جديد</p>
 
     <form id="registerForm">
 
+      <label for="fullName">الاسم الكامل</label>
       <input
         type="text"
         id="fullName"
-        placeholder="الاسم الكامل"
+        placeholder="أدخل اسمك الكامل"
+        autocomplete="name"
         required
       >
 
+      <label for="email">البريد الإلكتروني</label>
       <input
         type="email"
         id="email"
-        placeholder="البريد الإلكتروني"
+        placeholder="example@email.com"
         autocomplete="email"
         required
       >
 
+      <label for="password">كلمة المرور</label>
       <input
         type="password"
         id="password"
-        placeholder="كلمة المرور"
+        placeholder="ستة أحرف أو أكثر"
         minlength="6"
         autocomplete="new-password"
         required
       >
 
+      <label for="confirmPassword">تأكيد كلمة المرور</label>
       <input
         type="password"
         id="confirmPassword"
-        placeholder="تأكيد كلمة المرور"
+        placeholder="أعد كتابة كلمة المرور"
         minlength="6"
         autocomplete="new-password"
         required
@@ -125,26 +185,18 @@
 
     </form>
 
-    <div id="message"></div>
+    <div id="message" role="status" aria-live="polite"></div>
 
-    <a href="login.html">
-      لدي حساب بالفعل — تسجيل الدخول
-    </a>
+    <a href="login.html">لدي حساب بالفعل — تسجيل الدخول</a>
 
-    <a href="index.html">
-      العودة إلى الصفحة الرئيسية
-    </a>
+    <a href="index.html">العودة إلى الصفحة الرئيسية</a>
 
   </div>
-
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
-
-    /* ===============================
-       Supabase
-       =============================== */
+  (function () {
 
     const SUPABASE_URL =
       "https://bjiasnxdqxbxobqaovgh.supabase.co";
@@ -152,166 +204,180 @@
     const SUPABASE_PUBLISHABLE_KEY =
       "sb_publishable_E5cMO9MoOnCt7QwUJrRcZw_WwaLK8b6";
 
-    const supabaseClient =
-      supabase.createClient(
+    const form = document.getElementById("registerForm");
+    const button = document.getElementById("registerButton");
+    const message = document.getElementById("message");
+
+    function showMessage(text, type) {
+      message.textContent = text;
+      message.className = type;
+    }
+
+    function explainError(error) {
+      const original = String(
+        error && error.message ? error.message : ""
+      );
+      const lower = original.toLowerCase();
+
+      if (!navigator.onLine) {
+        return "لا يوجد اتصال بالإنترنت. تحقق من اتصالك ثم حاول مرة أخرى.";
+      }
+
+      if (
+        lower.includes("failed to fetch") ||
+        lower.includes("networkerror") ||
+        lower.includes("network request failed")
+      ) {
+        return "فشل الاتصال بخدمة التسجيل. تحقق من الإنترنت، ثم جرّب مرة أخرى. إذا استمرت المشكلة، تحقق من عنوان ومفتاح Supabase.";
+      }
+
+      if (
+        lower.includes("invalid api key") ||
+        lower.includes("invalidapikey") ||
+        lower.includes("api key")
+      ) {
+        return "مفتاح Supabase غير مقبول. راجع المفتاح العام المنشور في إعدادات مشروعك.";
+      }
+
+      if (
+        lower.includes("already registered") ||
+        lower.includes("user already registered")
+      ) {
+        return "هذا البريد الإلكتروني مسجل بالفعل. انتقل إلى صفحة تسجيل الدخول.";
+      }
+
+      if (
+        lower.includes("password") &&
+        (lower.includes("weak") || lower.includes("short"))
+      ) {
+        return "كلمة المرور ضعيفة أو قصيرة. استخدم كلمة مرور أقوى.";
+      }
+
+      if (lower.includes("rate limit") ||
+          lower.includes("too many requests")) {
+        return "تم إجراء محاولات كثيرة. انتظر قليلًا ثم حاول مرة أخرى.";
+      }
+
+      if (lower.includes("signup is disabled")) {
+        return "إنشاء الحسابات متوقف في إعدادات Supabase. يجب تفعيل التسجيل من إعدادات المصادقة.";
+      }
+
+      return original
+        ? "تعذر إنشاء الحساب: " + original
+        : "حدث خطأ غير معروف. حاول مرة أخرى.";
+    }
+
+    let supabaseClient;
+
+    try {
+      if (
+        !window.supabase ||
+        typeof window.supabase.createClient !== "function"
+      ) {
+        throw new Error("تعذر تحميل مكتبة Supabase");
+      }
+
+      supabaseClient = window.supabase.createClient(
         SUPABASE_URL,
         SUPABASE_PUBLISHABLE_KEY
       );
 
+    } catch (error) {
+      console.error("Supabase setup error:", error);
 
-    /* ===============================
-       العناصر
-       =============================== */
+      showMessage(
+        "تعذر تشغيل خدمة التسجيل. تحقق من الإنترنت وأعد تحميل الصفحة.",
+        "error"
+      );
 
-    const form =
-      document.getElementById("registerForm");
+      button.disabled = true;
+      return;
+    }
 
-    const button =
-      document.getElementById("registerButton");
+    form.addEventListener("submit", async function (event) {
+      event.preventDefault();
 
-    const message =
-      document.getElementById("message");
+      const fullName =
+        document.getElementById("fullName").value.trim();
 
+      const email =
+        document.getElementById("email").value.trim();
 
-    /* ===============================
-       إنشاء الحساب
-       =============================== */
+      const password =
+        document.getElementById("password").value;
 
-    form.addEventListener(
-      "submit",
-      async function(event) {
+      const confirmPassword =
+        document.getElementById("confirmPassword").value;
 
-        event.preventDefault();
+      if (!fullName) {
+        showMessage("يرجى إدخال الاسم الكامل.", "error");
+        return;
+      }
 
-        const fullName =
-          document.getElementById("fullName")
-            .value.trim();
+      if (password.length < 6) {
+        showMessage("يجب أن تتكون كلمة المرور من ستة أحرف على الأقل.", "error");
+        return;
+      }
 
-        const email =
-          document.getElementById("email")
-            .value.trim();
+      if (password !== confirmPassword) {
+        showMessage("كلمتا المرور غير متطابقتين.", "error");
+        return;
+      }
 
-        const password =
-          document.getElementById("password")
-            .value;
+      button.disabled = true;
+      button.textContent = "جاري إنشاء الحساب...";
+      message.className = "";
+      message.textContent = "";
 
-        const confirmPassword =
-          document.getElementById("confirmPassword")
-            .value;
+      try {
+        const { data, error } =
+          await supabaseClient.auth.signUp({
+            email: email,
+            password: password,
+            options: {
+              data: {
+                full_name: fullName
+              }
+            }
+          });
 
+        if (error) {
+          throw error;
+        }
 
-        /* التحقق من كلمة المرور */
+        if (!data || !data.user) {
+          throw new Error("لم يرجع النظام بيانات الحساب.");
+        }
 
-        if (password !== confirmPassword) {
+        if (data.session) {
+          showMessage(
+            "تم إنشاء حسابك بنجاح. جاري الانتقال إلى صفحة التقديم...",
+            "success"
+          );
 
-          message.textContent =
-            "❌ كلمتا المرور غير متطابقتين";
-
-          message.style.color = "#b00020";
-
+          window.location.replace("student.html");
           return;
         }
 
+        showMessage(
+          "تم إرسال طلب إنشاء الحساب. إذا طُلب منك تأكيد البريد الإلكتروني، افتح رسالة Supabase وأكّد حسابك، ثم سجّل الدخول.",
+          "success"
+        );
 
-        button.disabled = true;
+        button.disabled = false;
+        button.textContent = "إنشاء الحساب";
 
-        button.textContent =
-          "جاري إنشاء الحساب...";
+      } catch (error) {
+        console.error("Register error:", error);
 
-        message.textContent = "";
+        showMessage(explainError(error), "error");
 
-
-        try {
-
-          const { data, error } =
-            await supabaseClient.auth.signUp({
-
-              email: email,
-
-              password: password,
-
-              options: {
-
-                data: {
-                  full_name: fullName
-                }
-
-              }
-
-            });
-
-
-          if (error) {
-
-            console.error(
-              "Register Error:",
-              error
-            );
-
-            message.textContent =
-              "❌ " + error.message;
-
-            message.style.color =
-              "#b00020";
-
-            button.disabled = false;
-
-            button.textContent =
-              "إنشاء الحساب";
-
-            return;
-          }
-
-
-          /*
-           * تم إنشاء الحساب بنجاح.
-           *
-           * إذا كان تأكيد البريد الإلكتروني
-           * مفعلاً في Supabase، سيحتاج الطالب
-           * إلى تأكيد بريده أولًا.
-           */
-
-          message.textContent =
-            "✅ تم إنشاء الحساب بنجاح. جاري الانتقال إلى تسجيل الدخول...";
-
-          message.style.color =
-            "#16803c";
-
-
-          /*
-           * الانتقال تلقائيًا إلى تسجيل الدخول
-           */
-
-          setTimeout(function() {
-
-            window.location.href =
-              "login.html";
-
-          }, 1200);
-
-
-        } catch (error) {
-
-          console.error(
-            "Unexpected Register Error:",
-            error
-          );
-
-          message.textContent =
-            "❌ حدث خطأ أثناء إنشاء الحساب.";
-
-          message.style.color =
-            "#b00020";
-
-          button.disabled = false;
-
-          button.textContent =
-            "إنشاء الحساب";
-        }
-
+        button.disabled = false;
+        button.textContent = "إنشاء الحساب";
       }
-    );
+    });
 
+  })();
   </script>
 
 </body>
