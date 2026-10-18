@@ -1,635 +1,275 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تسجيل الدخول - مكتب الوسام للخدمات التعليمية والمنح الدراسية</title>
 
-  <meta charset="UTF-8">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <title>تسجيل الدخول - مكتب الوسام</title>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <style>
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      min-height: 100%;
-      overflow-x: hidden;
-    }
-
-    body {
-      font-family: Arial, Tahoma, sans-serif;
-      background: #f4f7fb;
-      color: #222;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 430px;
-    }
-
-    .card {
-      background: white;
-      border-radius: 18px;
-      padding: 30px 25px;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-    }
-
-    .logo {
-      text-align: center;
-      font-size: 42px;
-      margin-bottom: 8px;
-    }
-
-    h1 {
-      text-align: center;
-      margin: 0 0 8px;
-      color: #123b6d;
-      font-size: 26px;
-    }
-
-    .subtitle {
-      text-align: center;
-      color: #666;
-      margin-bottom: 28px;
-      font-size: 15px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 7px;
-      font-weight: bold;
-      color: #333;
-    }
-
-    input {
-      width: 100%;
-      padding: 13px;
-      border: 1px solid #d5dbe3;
-      border-radius: 10px;
-      font-size: 16px;
-      outline: none;
-      margin-bottom: 17px;
-      direction: ltr;
-      text-align: left;
-    }
-
-    input:focus {
-      border-color: #2563eb;
-    }
-
-    button {
-      width: 100%;
-      border: none;
-      border-radius: 10px;
-      padding: 14px;
-      font-size: 17px;
-      font-weight: bold;
-      cursor: pointer;
-      background: #123b6d;
-      color: white;
-      margin-top: 5px;
-    }
-
-    button:hover {
-      background: #0d2f58;
-    }
-
-    button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    .links {
-      text-align: center;
-      margin-top: 20px;
-      line-height: 2;
-    }
-
-    .links a {
-      color: #2563eb;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    .message {
-      display: none;
-      padding: 12px;
-      border-radius: 10px;
-      margin-bottom: 18px;
-      font-size: 14px;
-      line-height: 1.7;
-      text-align: center;
-    }
-
-    .error {
-      display: block;
-      background: #fee2e2;
-      color: #991b1b;
-      border: 1px solid #fecaca;
-    }
-
-    .success {
-      display: block;
-      background: #dcfce7;
-      color: #166534;
-      border: 1px solid #bbf7d0;
-    }
-
-    .forgot {
-      display: block;
-      text-align: center;
-      margin-top: 12px;
-      color: #2563eb;
-      text-decoration: none;
-      font-size: 14px;
-    }
-
-    @media (max-width: 480px) {
-
-      body {
-        padding: 12px;
-      }
-
-      .card {
-        padding: 25px 18px;
-      }
-
-      h1 {
-        font-size: 23px;
-      }
-
-    }
-
-  </style>
-
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;width:100%;min-height:100%;overflow-x:hidden}
+body{
+font-family:Arial,Tahoma,sans-serif;background:#f4f7fb;color:#222;
+display:flex;justify-content:center;align-items:center;min-height:100vh;padding:20px
+}
+.container{width:100%;max-width:430px}
+.card{background:#fff;border-radius:18px;padding:30px 25px;box-shadow:0 8px 30px rgba(0,0,0,.08)}
+.logo{text-align:center;font-size:42px;margin-bottom:8px}
+h1{text-align:center;margin:0 0 12px;color:#123b6d;font-size:24px;line-height:1.7}
+.subtitle{text-align:center;color:#666;margin-bottom:28px;font-size:15px}
+label{display:block;margin-bottom:7px;font-weight:bold;color:#333}
+input{
+width:100%;padding:13px;border:1px solid #d5dbe3;border-radius:10px;
+font-size:16px;outline:none;margin-bottom:17px;direction:ltr;text-align:left
+}
+input:focus{border-color:#2563eb}
+button{
+width:100%;border:none;border-radius:10px;padding:14px;font-size:17px;
+font-weight:bold;cursor:pointer;background:#123b6d;color:white;margin-top:5px
+}
+button:hover{background:#0d2f58}
+button:disabled{opacity:.6;cursor:not-allowed}
+.links{text-align:center;margin-top:20px;line-height:2}
+.links a,.forgot{color:#2563eb;text-decoration:none;font-weight:bold}
+.message{
+display:none;padding:12px;border-radius:10px;margin-bottom:18px;
+font-size:14px;line-height:1.8;text-align:center;overflow-wrap:anywhere
+}
+.error{display:block;background:#fee2e2;color:#991b1b;border:1px solid #fecaca}
+.success{display:block;background:#dcfce7;color:#166534;border:1px solid #bbf7d0}
+.forgot{display:block;text-align:center;margin-top:15px;font-size:14px}
+@media(max-width:480px){
+body{padding:12px}
+.card{padding:25px 18px}
+h1{font-size:22px}
+}
+</style>
 </head>
 
 <body>
+<div class="container">
+<div class="card">
 
-  <div class="container">
+<div class="logo">🎓</div>
 
-    <div class="card">
+<h1>مكتب الوسام للخدمات التعليمية والمنح الدراسية</h1>
+<div class="subtitle">تسجيل الدخول إلى حسابك</div>
 
-      <div class="logo">🎓</div>
+<div id="message" class="message" role="status" aria-live="polite"></div>
 
-      <h1>
-        مكتب الوسام للتقديم والمنح الجامعية
-      </h1>
+<form id="loginForm">
+<label for="email">البريد الإلكتروني</label>
+<input type="email" id="email" placeholder="example@email.com"
+autocomplete="email" required>
 
-      <div class="subtitle">
-        تسجيل الدخول إلى حسابك
-      </div>
+<label for="password">كلمة المرور</label>
+<input type="password" id="password" placeholder="أدخل كلمة المرور"
+autocomplete="current-password" required>
 
+<button type="submit" id="loginButton">تسجيل الدخول</button>
+</form>
 
-      <div
-        id="message"
-        class="message">
-      </div>
+<a href="#" class="forgot" id="forgotPassword">نسيت كلمة المرور؟</a>
 
+<div class="links">
+ليس لديك حساب؟
+<a href="register.html">إنشاء حساب جديد</a>
+<br>
+<a href="index.html">العودة إلى الصفحة الرئيسية</a>
+</div>
 
-      <form id="loginForm">
+</div>
+</div>
 
-        <label for="email">
-          البريد الإلكتروني
-        </label>
+<script>
+(function () {
+  const SUPABASE_URL =
+    "https://bjiasnxdqxbxobqaovgh.supabase.co";
 
-        <input
-          type="email"
-          id="email"
-          placeholder="example@email.com"
-          autocomplete="email"
-          required
-        >
+  const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_E5cMO9MoOnCt7QwUJrRcZw_WwaLK8b6";
 
+  const form = document.getElementById("loginForm");
+  const button = document.getElementById("loginButton");
+  const message = document.getElementById("message");
+  const forgot = document.getElementById("forgotPassword");
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
 
-        <label for="password">
-          كلمة المرور
-        </label>
+  function showMessage(text, type) {
+    message.textContent = text;
+    message.className = "message " + type;
+  }
 
-        <input
-          type="password"
-          id="password"
-          placeholder="أدخل كلمة المرور"
-          autocomplete="current-password"
-          required
-        >
+  function hideMessage() {
+    message.textContent = "";
+    message.className = "message";
+  }
 
+  function explainError(error) {
+    const text = String(error && error.message ? error.message : "");
+    const lower = text.toLowerCase();
 
-        <button
-          type="submit"
-          id="loginButton">
+    if (!navigator.onLine) {
+      return "لا يوجد اتصال بالإنترنت. تحقق من الاتصال ثم حاول مرة أخرى.";
+    }
 
-          تسجيل الدخول
+    if (lower.includes("invalid login credentials")) {
+      return "البريد الإلكتروني أو كلمة المرور غير صحيحة.";
+    }
 
-        </button>
+    if (lower.includes("email not confirmed")) {
+      return "يرجى تأكيد بريدك الإلكتروني من رسالة Supabase أولًا.";
+    }
 
-      </form>
+    if (lower.includes("invalid api key") ||
+        lower.includes("apikey") ||
+        lower.includes("api key")) {
+      return "مفتاح Supabase غير مقبول. تحقق من المفتاح المنشور في إعدادات مشروعك.";
+    }
 
+    if (lower.includes("failed to fetch") ||
+        lower.includes("fetch") ||
+        lower.includes("networkerror") ||
+        lower.includes("network request failed")) {
+      return "فشل الاتصال بخدمة تسجيل الدخول. تحقق من الإنترنت، ثم أعد المحاولة. إذا استمرت المشكلة، تحقق من عنوان ومفتاح Supabase وإمكانية الوصول إلى الخدمة.";
+    }
 
-      <a
-        href="#"
-        class="forgot"
-        id="forgotPassword">
+    if (lower.includes("too many requests")) {
+      return "محاولات كثيرة خلال وقت قصير. انتظر قليلًا ثم حاول مرة أخرى.";
+    }
 
-        نسيت كلمة المرور؟
+    return text
+      ? "تعذر تسجيل الدخول: " + text
+      : "حدث خطأ غير معروف. حاول مرة أخرى.";
+  }
 
-      </a>
+  let client;
 
+  try {
+    if (!window.supabase ||
+        typeof window.supabase.createClient !== "function") {
+      throw new Error("تعذر تحميل مكتبة Supabase.");
+    }
 
-      <div class="links">
+    client = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+  } catch (error) {
+    showMessage(
+      "تعذر تشغيل خدمة تسجيل الدخول. تحقق من الإنترنت ومفتاح Supabase ثم أعد تحميل الصفحة.",
+      "error"
+    );
+    console.error("Supabase initialization error:", error);
+    button.disabled = true;
+    return;
+  }
 
-        ليس لديك حساب؟
+  form.addEventListener("submit", async function (event) {
+    event.preventDefault();
+    hideMessage();
 
-        <a href="register.html">
-          إنشاء حساب جديد
-        </a>
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
 
-        <br>
+    if (!email || !password) {
+      showMessage("أدخل البريد الإلكتروني وكلمة المرور.", "error");
+      return;
+    }
 
-        <a href="index.html">
-          العودة إلى الصفحة الرئيسية
-        </a>
+    button.disabled = true;
+    button.textContent = "جاري تسجيل الدخول...";
 
-      </div>
+    try {
+      const result = await client.auth.signInWithPassword({
+        email: email,
+        password: password
+      });
 
-    </div>
+      if (result.error) {
+        throw result.error;
+      }
 
-  </div>
+      if (!result.data || !result.data.user) {
+        throw new Error("لم يتم العثور على حساب المستخدم.");
+      }
 
+      showMessage("تم تسجيل الدخول بنجاح. جاري فتح صفحة التقديم...", "success");
 
-  <script>
+      window.location.replace("student.html");
 
-    /* ==========================================
-       Supabase
-       ========================================== */
+    } catch (error) {
+      console.error("Login error:", error);
+      showMessage(explainError(error), "error");
+      button.disabled = false;
+      button.textContent = "تسجيل الدخول";
+    }
+  });
 
-    const SUPABASE_URL =
-      "https://bjiasnxdqxbxobqaovgh.supabase.co";
+  forgot.addEventListener("click", async function (event) {
+    event.preventDefault();
+    hideMessage();
 
-    const SUPABASE_PUBLISHABLE_KEY =
-      "sb_publishable_E5cMO9MoOnCt7QwUJrRcZw_WwaLK8b6";
+    const email = emailInput.value.trim();
 
-
-    const supabaseClient =
-      supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_PUBLISHABLE_KEY
+    if (!email) {
+      showMessage(
+        "اكتب بريدك الإلكتروني أولًا، ثم اضغط نسيت كلمة المرور.",
+        "error"
       );
-
-
-    /* ==========================================
-       عناصر الصفحة
-       ========================================== */
-
-    const loginForm =
-      document.getElementById("loginForm");
-
-    const loginButton =
-      document.getElementById("loginButton");
-
-    const message =
-      document.getElementById("message");
-
-    const forgotPassword =
-      document.getElementById("forgotPassword");
-
-
-    /* ==========================================
-       الرسائل
-       ========================================== */
-
-    function showMessage(text, type) {
-
-      message.textContent = text;
-
-      message.className =
-        "message " + type;
-
+      emailInput.focus();
+      return;
     }
 
+    forgot.textContent = "جاري إرسال الرابط...";
 
-    function hideMessage() {
+    try {
+      const redirectUrl =
+        window.location.origin +
+        window.location.pathname.replace(/[^/]*$/, "reset-password.html");
 
-      message.textContent = "";
+      const result = await client.auth.resetPasswordForEmail(email, {
+        redirectTo: redirectUrl
+      });
 
-      message.className =
-        "message";
+      if (result.error) {
+        throw result.error;
+      }
 
+      showMessage(
+        "إذا كان البريد مسجلًا، فراجع صندوق الوارد والرسائل غير المرغوب فيها. تأكد من إعداد رابط إعادة التعيين في Supabase.",
+        "success"
+      );
+    } catch (error) {
+      console.error("Password reset error:", error);
+      showMessage(explainError(error), "error");
+    } finally {
+      forgot.textContent = "نسيت كلمة المرور؟";
     }
-
-
-    /* ==========================================
-       تسجيل الدخول
-       ========================================== */
-
-    loginForm.addEventListener(
-      "submit",
-      async function(event) {
-
-        event.preventDefault();
-
-        hideMessage();
-
-        const email =
-          document.getElementById("email")
-            .value.trim();
-
-        const password =
-          document.getElementById("password")
-            .value;
-
-
-        if (!email || !password) {
-
-          showMessage(
-            "يرجى إدخال البريد الإلكتروني وكلمة المرور.",
-            "error"
-          );
-
-          return;
-        }
-
-
-        loginButton.disabled = true;
-
-        loginButton.textContent =
-          "جاري تسجيل الدخول...";
-
-
-        try {
-
-          const { data, error } =
-            await supabaseClient.auth
-              .signInWithPassword({
-
-                email: email,
-
-                password: password
-
-              });
-
-
-          if (error) {
-
-            console.error(
-              "Supabase Login Error:",
-              error
-            );
-
-
-            let errorText =
-              error.message ||
-              "حدث خطأ أثناء تسجيل الدخول.";
-
-
-            if (
-              errorText
-                .toLowerCase()
-                .includes(
-                  "invalid login credentials"
-                )
-            ) {
-
-              errorText =
-                "البريد الإلكتروني أو كلمة المرور غير صحيحة.";
-
-            }
-
-
-            if (
-              errorText
-                .toLowerCase()
-                .includes(
-                  "email not confirmed"
-                )
-            ) {
-
-              errorText =
-                "لم يتم تأكيد البريد الإلكتروني بعد. افتح رسالة التأكيد في بريدك الإلكتروني.";
-
-            }
-
-
-            showMessage(
-              errorText,
-              "error"
-            );
-
-            loginButton.disabled = false;
-
-            loginButton.textContent =
-              "تسجيل الدخول";
-
-            return;
-          }
-
-
-          if (!data || !data.user) {
-
-            showMessage(
-              "تعذر العثور على حساب المستخدم.",
-              "error"
-            );
-
-            loginButton.disabled = false;
-
-            loginButton.textContent =
-              "تسجيل الدخول";
-
-            return;
-          }
-
-
-          /* نجاح تسجيل الدخول */
-
-          showMessage(
-            "✅ تم تسجيل الدخول بنجاح. جاري الانتقال إلى صفحة التقديم...",
-            "success"
-          );
-
-
-          /*
-           * الانتقال مباشرة إلى
-           * أول خطوة في التقديم
-           */
-
-          setTimeout(function() {
-
-            window.location.href =
-              "student.html";
-
-          }, 900);
-
-
-        } catch (error) {
-
-          console.error(
-            "Unexpected Login Error:",
-            error
-          );
-
-          showMessage(
-            "حدث خطأ أثناء الاتصال. حاول مرة أخرى.",
-            "error"
-          );
-
-          loginButton.disabled = false;
-
-          loginButton.textContent =
-            "تسجيل الدخول";
-
-        }
-
-      }
-    );
-
-
-    /* ==========================================
-       نسيت كلمة المرور
-       ========================================== */
-
-    forgotPassword.addEventListener(
-      "click",
-      async function(event) {
-
-        event.preventDefault();
-
-        hideMessage();
-
-        const email =
-          document.getElementById("email")
-            .value.trim();
-
-
-        if (!email) {
-
-          showMessage(
-            "اكتب بريدك الإلكتروني أولًا، ثم اضغط «نسيت كلمة المرور؟».",
-            "error"
-          );
-
-          document
-            .getElementById("email")
-            .focus();
-
-          return;
-        }
-
-
-        forgotPassword.textContent =
-          "جاري إرسال الرابط...";
-
-
-        try {
-
-          const { error } =
-            await supabaseClient.auth
-              .resetPasswordForEmail(
-                email,
-                {
-                  redirectTo:
-                    window.location.origin +
-                    "/reset-password.html"
-                }
-              );
-
-
-          if (error) {
-
-            showMessage(
-              error.message ||
-              "تعذر إرسال رابط إعادة التعيين.",
-              "error"
-            );
-
-            return;
-          }
-
-
-          showMessage(
-            "✅ تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني.",
-            "success"
-          );
-
-
-        } catch (error) {
-
-          console.error(
-            error
-          );
-
-          showMessage(
-            "حدث خطأ أثناء إرسال رابط إعادة التعيين.",
-            "error"
-          );
-
-
-        } finally {
-
-          forgotPassword.textContent =
-            "نسيت كلمة المرور؟";
-
-        }
-
-      }
-    );
-
-
-    /* ==========================================
-       إذا كان الطالب مسجلًا بالفعل
-       ========================================== */
-
-    async function checkCurrentSession() {
-
-      try {
-
-        const { data } =
-          await supabaseClient.auth
-            .getSession();
-
-
-        if (
-          data &&
-          data.session
-        ) {
-
-          window.location.href =
-            "student.html";
-
-        }
-
-      } catch (error) {
-
-        console.error(
-          "Session Error:",
-          error
-        );
-
+  });
+
+  async function checkCurrentSession() {
+    try {
+      const result = await client.auth.getSession();
+
+      if (result.error) {
+        console.error("Session error:", result.error);
+        return;
       }
 
+      if (result.data && result.data.session) {
+        window.location.replace("student.html");
+      }
+    } catch (error) {
+      console.error("Session check error:", error);
     }
+  }
 
-
-    checkCurrentSession();
-
-  </script>
-
+  checkCurrentSession();
+})();
+</script>
 </body>
 </html>
